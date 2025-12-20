@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFS Visualizer (Tree)</title>
+    <link rel="stylesheet" href="../css/depth_first_search.css">
+</head>
+<body>
+
+    <h1>Depth-First Search (DFS)</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Will be built into a Tree)</label>
+                <input type="text" id="arrayInput" value="A, B, C, D, E, F, G, H, I, J" placeholder="e.g. 1, 2, 3, 4">
+            </div>
+            <div class="input-group">
+                <label>Target to Find</label>
+                <input type="text" id="targetInput" value="G" placeholder="Value">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="500" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--current);"></div> Current</div>
+            <div class="legend-item"><div class="dot" style="background: var(--visited);"></div> Visited</div>
+            <div class="legend-item"><div class="dot" style="background: var(--stack-color);"></div> In Stack</div>
+            <div class="legend-item"><div class="dot" style="background: var(--success);"></div> Found</div>
+        </div>
+
+        <div class="main-visual-area">
+            <div class="tree-container" id="treeContainer">
+                <svg id="svgLines"></svg>
+                </div>
+
+            <div class="stack-container">
+                <h3>Stack Status (LIFO)</h3>
+                <div class="stack-box-wrapper">
+                    <div class="stack-label">TOP</div>
+                    <div class="stack-box" id="stackBox">
+                        <span style="color: #666; margin: auto;">(Empty)</span>
+                    </div>
+                    <div class="stack-label">BOTTOM</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Tree built.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>DFS Algorithm Logic</h3>
+            <p>Depth-First Search dives deep into a branch before backtracking. It uses a **Stack** (Last In, First Out).</p>
+            <ol>
+                <li>Start at the <strong>Root</strong>. Push it to the <strong>Stack</strong>.</li>
+                <li>While the Stack is not empty:
+                    <ul>
+                        <li><strong>Pop</strong> the top node.</li>
+                        <li>Check if it is the <strong>Target</strong>. If yes, Stop.</li>
+                        <li>Mark it as visited.</li>
+                        <li><strong>Push</strong> its children to the Stack. <br><em>(Note: To process Left first, we push Right then Left).</em></li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+#include <stdio.h>
+
+// Recursive DFS
+void dfs(struct Node* root, int target) {
+    if (root == NULL) return;
+
+    if (root->data == target) {
+        printf("Found!");
+        return;
+    }
+
+    // Recurse Left first, then Right
+    dfs(root->left, target);
+    dfs(root->right, target);
+}
+</pre>
+            </div>
+
+            <div id="cpp" class="code-content">
+<pre>
+#include <iostream>
+#include <stack>
+using namespace std;
+
+// Iterative DFS using Stack
+void dfs(Node* root, int target) {
+    if (!root) return;
+    stack<Node*> s;
+    s.push(root);
+
+    while (!s.empty()) {
+        Node* current = s.top();
+        s.pop();
+
+        if (current->data == target) {
+            cout << "Found!" << endl;
+            return;
+        }
+
+        // Push Right then Left to process Left first
+        if (current->right) s.push(current->right);
+        if (current->left) s.push(current->left);
+    }
+}
+</pre>
+            </div>
+
+            <div id="java" class="code-content">
+<pre>
+public class DFS {
+    // Recursive DFS
+    public void search(Node node, int target) {
+        if (node == null) return;
+
+        if (node.data == target) {
+            System.out.println("Found!");
+            return;
+        }
+
+        search(node.left, target);
+        search(node.right, target);
+    }
+}
+</pre>
+            </div>
+
+            <div id="python" class="code-content">
+<pre>
+def dfs(root, target):
+    if root is None: return
+
+    if root.data == target:
+        print("Found!")
+        return
+
+    # Recursive
+    dfs(root.left, target)
+    dfs(root.right, target)
+</pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/depth_first_search.js"></script>
+</body>
+</html>

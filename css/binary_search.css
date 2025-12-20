@@ -1,0 +1,272 @@
+:root {
+    --bg-color: #1e1e2e;
+    --card-bg: #2b2b40;
+    --primary: #89b4fa;
+    --success: #a6e3a1; /* Green for found */
+    --danger: #f38ba8;  /* Red for not match/discarded boundary */
+    --warning: #f9e2af; /* Yellow for Midpoint */
+    --text: #cdd6f4;
+    --muted: #a6adc8;
+    --range-border: rgba(137, 180, 250, 0.5);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 { margin-bottom: 20px; color: var(--primary); }
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+/* Controls */
+.controls-card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label { font-size: 0.9rem; color: var(--muted); }
+
+input[type="text"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #45475a;
+    background: #181825;
+    color: white;
+    font-size: 1rem;
+    min-width: 150px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.1s, opacity 0.2s;
+    color: #181825;
+}
+
+button:active { transform: scale(0.95); }
+.btn-primary { background-color: var(--primary); }
+.btn-step { background-color: var(--warning); }
+.btn-stop { background-color: var(--danger); }
+.btn-reset { background-color: var(--muted); }
+
+.speed-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+/* Visualizer Area */
+.visualizer-container {
+    background-color: var(--card-bg);
+    padding: 40px 30px 60px 30px; /* Extra bottom padding for markers */
+    border-radius: 12px;
+    min-height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    position: relative;
+}
+
+.array-item {
+    width: 60px;
+    height: 60px;
+    background-color: #313244;
+    border: 2px solid #45475a;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.array-item .index-label {
+    position: absolute;
+    top: -25px;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* ----- Binary Search Specific Animation States ----- */
+
+/* Elements outside the current Low/High range */
+.array-item.discarded {
+    opacity: 0.3;
+    transform: scale(0.9);
+}
+
+/* Elements within the current Low/High range */
+.array-item.in-range {
+    border-color: var(--primary);
+    background-color: rgba(137, 180, 250, 0.1);
+}
+
+/* The Midpoint element currently being compared */
+.array-item.midpoint {
+    background-color: var(--warning);
+    color: #1e1e2e;
+    transform: scale(1.15);
+    border-color: var(--warning);
+    box-shadow: 0 0 15px var(--warning);
+    z-index: 2;
+}
+
+/* Found state */
+.array-item.found {
+    background-color: var(--success) !important;
+    color: #1e1e2e !important;
+    border-color: var(--success) !important;
+    transform: scale(1.2);
+    box-shadow: 0 0 20px var(--success);
+    z-index: 3;
+}
+
+/* Markers for Low, Mid, High pointers below boxes */
+.array-item::after {
+    position: absolute;
+    bottom: -35px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s;
+}
+
+.array-item.low-marker::after {
+    content: 'L';
+    color: var(--primary);
+    opacity: 1;
+}
+.array-item.high-marker::after {
+    content: 'H';
+    color: var(--primary);
+    opacity: 1;
+}
+.array-item.midpoint::after {
+    content: 'M'; /* Midpoint also gets an M */
+    color: var(--warning);
+    bottom: -40px; /* Slightly lower to not overlap if L=M=H */
+    opacity: 1;
+}
+
+
+/* Logs */
+.log-section {
+    background-color: #11111b;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    min-height: 60px; /* Slightly taller for multi-line binary logs */
+    color: var(--text);
+    border-left: 4px solid var(--primary);
+    white-space: pre-wrap; /* Allow line breaks in logs */
+}
+
+/* Algorithm Explanation */
+.algo-explanation {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    color: var(--text);
+    border-left: 4px solid var(--warning);
+}
+
+.algo-explanation h3 { margin-top: 0; color: var(--warning); }
+.algo-explanation ol { margin-left: 20px; padding: 0; }
+.algo-explanation li { margin-bottom: 10px; line-height: 1.6; }
+
+/* Code Section */
+.code-section {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tabs { display: flex; background-color: #181825; }
+.tab-btn {
+    padding: 15px 25px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    flex: 1;
+    font-size: 1rem;
+    border-bottom: 3px solid transparent;
+}
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    background-color: rgba(137, 180, 250, 0.1);
+}
+.code-content { padding: 20px; display: none; }
+.code-content.active { display: block; }
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+    color: #cdd6f4;
+    font-family: 'Courier New', monospace;
+    background: #11111b;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .controls-card { flex-direction: column; align-items: stretch; }
+    .input-group input { width: 100%; box-sizing: border-box; }
+    .button-group { flex-direction: column; }
+}

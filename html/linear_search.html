@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Search Visualizer</title>
+    <link rel="stylesheet" href="../css/linear_search.css">
+</head>
+<body>
+
+    <h1>Linear Search</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group">
+                <label>Data Set (comma separated)</label>
+                <input type="text" id="arrayInput" value="10, 50, A, Cat, 88, 12, Z, 99" placeholder="e.g. 10, 5, Apple, 20">
+            </div>
+            <div class="input-group">
+                <label>Target to Find</label>
+                <input type="text" id="targetInput" value="12" placeholder="Value">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1x</span></label>
+                <input type="range" id="speedRange" min="100" max="1500" value="800" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--warning);"></div> Current</div>
+            <div class="legend-item"><div class="dot" style="background: var(--success);"></div> Found</div>
+            <div class="legend-item"><div class="dot" style="background: #45475a;"></div> Visited</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready to search...
+        </div>
+
+        <div class="algo-explanation">
+            <h3>Algorithm Logic</h3>
+            <ol>
+                <li>Start from the very first element (index 0) of the list.</li>
+                <li>Compare the current element with the <strong>Target</strong> value.</li>
+                <li>If the current element matches the target, <strong>Stop</strong>. You found it!</li>
+                <li>If it doesn't match, move to the next element.</li>
+                <li>Repeat until a match is found or the list ends.</li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+#include <stdio.h>
+
+int linearSearch(int arr[], int n, int x) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == x)
+            return i; // Element found at index i
+    }
+    return -1; // Element not found
+}
+</pre>
+            </div>
+
+            <div id="cpp" class="code-content">
+<pre>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int linearSearch(vector<int> arr, int x) {
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] == x)
+            return i; // Element found
+    }
+    return -1; // Not found
+}
+</pre>
+            </div>
+
+            <div id="java" class="code-content">
+<pre>
+public class LinearSearch {
+    public static int search(int[] arr, int x) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == x) {
+                return i; // Found at index i
+            }
+        }
+        return -1; // Not found
+    }
+}
+</pre>
+            </div>
+
+            <div id="python" class="code-content">
+<pre>
+def linear_search(arr, x):
+    for i in range(len(arr)):
+        if arr[i] == x:
+            return i  # Found at index i
+    return -1  # Not found
+</pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/linear_search.js"></script>
+</body>
+</html>

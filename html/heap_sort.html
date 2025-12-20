@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Heap Sort</title>
+    <link rel="stylesheet" href="../css/heap_sort.css">
+</head>
+<body>
+
+    <h1>Heap Sort</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Comma separated)</label>
+                <input type="text" id="arrayInput" value="12, 11, 13, 5, 6, 7" placeholder="e.g. 10, 50, 23">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">0.8s</span></label>
+                <input type="range" id="speedRange" min="200" max="1500" value="800" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSort()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSort()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--parent);"></div> Parent</div>
+            <div class="legend-item"><div class="dot" style="background: var(--child);"></div> Child</div>
+            <div class="legend-item"><div class="dot" style="background: var(--swap);"></div> Swapping</div>
+            <div class="legend-item"><div class="dot" style="background: var(--sorted);"></div> Sorted</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Load data and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
+
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(int arr[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    for (int i = n - 1; i > 0; i--) {
+        swap(&arr[0], &arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>
+void heapify(vector<int>& arr, int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+// HeapSort loop is same as C
+</pre></div>
+            <div id="java" class="code-content"><pre>
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
+    if (largest != i) {
+        int swap = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = swap;
+        heapify(arr, n, largest);
+    }
+}
+</pre></div>
+            <div id="python" class="code-content"><pre>
+def heapify(arr, n, i):
+    largest = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    if l < n and arr[l] > arr[largest]: largest = l
+    if r < n and arr[r] > arr[largest]: largest = r
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/heap_sort.js"></script>
+</body>
+</html>

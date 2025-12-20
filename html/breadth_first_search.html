@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFS Visualizer (Tree)</title>
+    <link rel="stylesheet" href="../css/breadth_first_search.css">
+</head>
+<body>
+
+    <h1>Breadth-First Search (BFS)</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Will be built into a Tree)</label>
+                <input type="text" id="arrayInput" value="A, B, C, D, E, F, G, H, I, J" placeholder="e.g. 1, 2, 3, 4">
+            </div>
+            <div class="input-group">
+                <label>Target to Find</label>
+                <input type="text" id="targetInput" value="G" placeholder="Value">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="500" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--current);"></div> Current</div>
+            <div class="legend-item"><div class="dot" style="background: var(--visited);"></div> Visited</div>
+            <div class="legend-item"><div class="dot" style="background: var(--queue-color);"></div> In Queue</div>
+            <div class="legend-item"><div class="dot" style="background: var(--success);"></div> Found</div>
+        </div>
+
+        <div class="main-visual-area">
+            <div class="tree-container" id="treeContainer">
+                <svg id="svgLines"></svg>
+                </div>
+
+            <div class="queue-container">
+                <h3>Queue Status</h3>
+                <div class="queue-box" id="queueBox">
+                    <span style="color: #666;">(Empty)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Tree built from input data.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>BFS Algorithm Logic (Level Order)</h3>
+            <p>Breadth-First Search explores a tree or graph layer by layer using a <strong>Queue</strong> (First In, First Out) data structure.</p>
+            <ol>
+                <li>Start at the <strong>Root</strong> node. Add it to the <strong>Queue</strong>.</li>
+                <li>While the Queue is not empty:
+                    <ul>
+                        <li><strong>Dequeue</strong> the front node (remove it from queue).</li>
+                        <li>Check if this node is the <strong>Target</strong>. If yes, Stop.</li>
+                        <li>If not, <strong>Enqueue</strong> all its children (Left, then Right) to the back of the queue.</li>
+                        <li>Mark the current node as visited.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+#include <stdio.h>
+#include <stdlib.h>
+
+// Standard BFS on a Tree using a Queue
+void bfs(struct Node* root, int target) {
+    if (root == NULL) return;
+
+    // Create Queue
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    // Enqueue Root
+    queue[rear++] = root;
+
+    while (front < rear) {
+        // Dequeue
+        struct Node* current = queue[front++];
+
+        if (current->data == target) {
+            printf("Found!");
+            return;
+        }
+
+        // Enqueue Children
+        if (current->left) queue[rear++] = current->left;
+        if (current->right) queue[rear++] = current->right;
+    }
+}
+</pre>
+            </div>
+
+            <div id="cpp" class="code-content">
+<pre>
+#include <iostream>
+#include <queue>
+using namespace std;
+
+void bfs(Node* root, int target) {
+    if (!root) return;
+
+    queue<Node*> q;
+    q.push(root); // Enqueue Root
+
+    while (!q.empty()) {
+        Node* current = q.front();
+        q.pop(); // Dequeue
+
+        if (current->data == target) {
+            cout << "Found!" << endl;
+            return;
+        }
+
+        // Enqueue neighbors/children
+        if (current->left) q.push(current->left);
+        if (current->right) q.push(current->right);
+    }
+}
+</pre>
+            </div>
+
+            <div id="java" class="code-content">
+<pre>
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class BFS {
+    public static void search(Node root, int target) {
+        if (root == null) return;
+
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root); // Enqueue Root
+
+        while (!queue.isEmpty()) {
+            Node current = queue.poll(); // Dequeue
+
+            if (current.data == target) {
+                System.out.println("Found!");
+                return;
+            }
+
+            if (current.left != null) queue.add(current.left);
+            if (current.right != null) queue.add(current.right);
+        }
+    }
+}
+</pre>
+            </div>
+
+            <div id="python" class="code-content">
+<pre>
+from collections import deque
+
+def bfs(root, target):
+    if not root: return
+
+    queue = deque([root]) # Enqueue Root
+
+    while queue:
+        current = queue.popleft() # Dequeue
+
+        if current.data == target:
+            print("Found!")
+            return
+
+        if current.left: queue.append(current.left)
+        if current.right: queue.append(current.right)
+</pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/breadth_first_search.js"></script>
+</body>
+</html>

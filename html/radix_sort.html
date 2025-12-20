@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Radix Sort</title>
+    <link rel="stylesheet" href="../css/radix_sort.css">
+</head>
+<body>
+
+    <h1>Radix Sort</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Comma separated)</label>
+                <input type="text" id="arrayInput" value="170, 45, 75, 90, 802, 24, 2, 66" placeholder="e.g. 121, 45, 1">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">0.8s</span></label>
+                <input type="range" id="speedRange" min="200" max="1500" value="800" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSort()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSort()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--processing);"></div> Moving Block</div>
+            <div class="legend-item"><div class="dot" style="background: var(--sorted);"></div> Sorted Phase</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="buckets-wrapper">
+            <h3>Digit Buckets (0 - 9)</h3>
+            <div class="buckets-container" id="bucketsContainer">
+                </div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Load data and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void radixsort(int arr[], int n) {
+    int m = getMax(arr, n);
+    for (int exp = 1; m / exp > 0; exp *= 10)
+        countSort(arr, n, exp);
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void radixsort(vector<int>& arr) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public static void radixsort(int arr[], int n) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def radixSort(arr): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/radix_sort.js"></script>
+</body>
+</html>

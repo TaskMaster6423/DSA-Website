@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Bubble Sort</title>
+    <link rel="stylesheet" href="../css/bubble_sort.css">
+</head>
+<body>
+
+    <h1>Bubble Sort</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Comma separated)</label>
+                <input type="text" id="arrayInput" value="45, 12, 8, 99, 23, 67, 2, 34" placeholder="e.g. 10, 50, 23">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="300" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSort()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSort()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--compare);"></div> Comparing</div>
+            <div class="legend-item"><div class="dot" style="background: var(--swap);"></div> Swapping</div>
+            <div class="legend-item"><div class="dot" style="background: var(--sorted);"></div> Sorted</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Load data and click Start.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>Bubble Sort Logic</h3>
+            <p>Repeatedly swaps adjacent elements if they are in the wrong order.</p>
+            <ol>
+                <li><strong>Compare</strong> current element with the next one.</li>
+                <li>If <strong>Left > Right</strong>, trigger a <strong>Swap</strong> (Slide positions).</li>
+                <li>Move to the next pair.</li>
+                <li>Repeat until the largest element bubbles to the end.</li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void bubbleSort(vector<int>& arr) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public static void bubbleSort(int[] arr) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def bubble_sort(arr): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/bubble_sort.js"></script>
+</body>
+</html>

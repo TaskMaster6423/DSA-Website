@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Merge Sort</title>
+    <link rel="stylesheet" href="../css/merge_sort.css">
+</head>
+<body>
+
+    <h1>Merge Sort</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Comma separated)</label>
+                <input type="text" id="arrayInput" value="38, 27, 43, 3, 9, 82, 10" placeholder="e.g. 10, 50, 23">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">0.8s</span></label>
+                <input type="range" id="speedRange" min="200" max="1500" value="800" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSort()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSort()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--bar);"></div> Unsorted</div>
+            <div class="legend-item"><div class="dot" style="background: var(--merging);"></div> Merging (Lifted)</div>
+            <div class="legend-item"><div class="dot" style="background: var(--sorted);"></div> Sorted</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Load data and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void merge(int arr[], int l, int m, int r) {
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+    // Create temp arrays...
+    
+    i = 0; j = 0; k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+    }
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+}
+
+void mergeSort(int arr[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>
+void mergeSort(vector<int>& arr, int l, int r) {
+    if (l >= r) return;
+    int m = l + (r - l) / 2;
+    mergeSort(arr, l, m);
+    mergeSort(arr, m + 1, r);
+    merge(arr, l, m, r);
+}
+</pre></div>
+            <div id="java" class="code-content"><pre>
+void sort(int arr[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        sort(arr, l, m);
+        sort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+}
+</pre></div>
+            <div id="python" class="code-content"><pre>
+def mergeSort(arr):
+    if len(arr) > 1:
+        mid = len(arr)//2
+        L = arr[:mid]
+        R = arr[mid:]
+        mergeSort(L)
+        mergeSort(R)
+        # ... merge logic ...
+</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/merge_sort.js"></script>
+</body>
+</html>

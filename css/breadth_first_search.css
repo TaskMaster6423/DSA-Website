@@ -1,0 +1,260 @@
+:root {
+    --bg-color: #1e1e2e;
+    --card-bg: #2b2b40;
+    --primary: #89b4fa;
+    --success: #a6e3a1; 
+    --danger: #f38ba8;
+    --current: #f9e2af; /* Yellow for processing */
+    --visited: #45475a; /* Dimmed for visited */
+    --queue-color: #cba6f7; /* Purple for Queue items */
+    --text: #cdd6f4;
+    --muted: #a6adc8;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 { margin-bottom: 20px; color: var(--primary); }
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+/* Controls */
+.controls-card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.input-group { display: flex; flex-direction: column; gap: 5px; }
+label { font-size: 0.9rem; color: var(--muted); }
+input[type="text"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #45475a;
+    background: #181825;
+    color: white;
+    font-size: 1rem;
+    min-width: 150px;
+}
+
+.button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #181825;
+}
+button:active { transform: scale(0.95); }
+.btn-primary { background-color: var(--primary); }
+.btn-step { background-color: var(--current); }
+.btn-stop { background-color: var(--danger); }
+.btn-reset { background-color: var(--muted); }
+
+.speed-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+/* --- Main Visual Area (Split into Tree and Queue) --- */
+.main-visual-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Tree Container */
+.tree-container {
+    background-color: var(--card-bg);
+    position: relative;
+    height: 400px; /* Fixed height for tree drawing */
+    border-radius: 12px;
+    overflow: hidden; /* Hide scrollbars if tree gets big */
+    border: 2px solid #313244;
+}
+
+/* SVG Lines Layer */
+#svgLines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; /* Let clicks pass through */
+}
+
+line {
+    stroke: #45475a;
+    stroke-width: 2px;
+}
+
+/* Tree Nodes */
+.tree-node {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #313244;
+    border: 2px solid #585b70;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: var(--text);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+/* Animation States */
+.tree-node.in-queue {
+    border-color: var(--queue-color);
+    box-shadow: 0 0 10px var(--queue-color);
+    background-color: rgba(203, 166, 247, 0.2);
+}
+.tree-node.current {
+    background-color: var(--current);
+    color: #1e1e2e;
+    transform: scale(1.2);
+    border-color: var(--current);
+    box-shadow: 0 0 15px var(--current);
+    z-index: 10;
+}
+.tree-node.visited {
+    background-color: var(--visited);
+    color: #898ba5;
+    border-color: #313244;
+}
+.tree-node.found {
+    background-color: var(--success);
+    color: #1e1e2e;
+    transform: scale(1.3);
+    box-shadow: 0 0 20px var(--success);
+    border-color: var(--success);
+    z-index: 11;
+}
+
+/* Queue Visualization Section */
+.queue-container {
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 12px;
+}
+.queue-container h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--queue-color); }
+
+.queue-box {
+    display: flex;
+    gap: 10px;
+    min-height: 50px;
+    align-items: center;
+    padding: 10px;
+    background: #181825;
+    border-radius: 8px;
+    border: 1px dashed var(--muted);
+    overflow-x: auto;
+}
+
+.queue-item {
+    padding: 8px 15px;
+    background-color: var(--queue-color);
+    color: #1e1e2e;
+    border-radius: 4px;
+    font-weight: bold;
+    animation: slideIn 0.3s ease;
+    white-space: nowrap;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Logs and Algo Text */
+.log-section {
+    background-color: #11111b;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    min-height: 60px;
+    color: var(--text);
+    border-left: 4px solid var(--primary);
+}
+
+.algo-explanation {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+}
+.algo-explanation h3 { margin-top: 0; color: var(--primary); }
+.algo-explanation li { margin-bottom: 8px; }
+
+/* Code Tabs */
+.code-section {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.tabs { display: flex; background-color: #181825; }
+.tab-btn {
+    padding: 15px 25px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    flex: 1;
+    font-size: 1rem;
+    border-bottom: 3px solid transparent;
+}
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    background-color: rgba(137, 180, 250, 0.1);
+}
+.code-content { padding: 20px; display: none; }
+.code-content.active { display: block; }
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+    color: #cdd6f4;
+    font-family: 'Courier New', monospace;
+    background: #11111b;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    justify-content: center;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+
+@media (max-width: 600px) {
+    .controls-card { flex-direction: column; align-items: stretch; }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Insertion Sort</title>
+    <link rel="stylesheet" href="../css/insertion_sort.css">
+</head>
+<body>
+
+    <h1>Insertion Sort</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Comma separated)</label>
+                <input type="text" id="arrayInput" value="10, 40, 5, 20, 35, 15" placeholder="e.g. 5, 2, 9, 1">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="300" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSort()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSort()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--key);"></div> Key (Floating)</div>
+            <div class="legend-item"><div class="dot" style="background: var(--shift);"></div> Shifting Right</div>
+            <div class="legend-item"><div class="dot" style="background: var(--sorted);"></div> Sorted Zone</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Load data and click Start.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>Insertion Sort Logic</h3>
+            <ol>
+                <li><strong>Pick:</strong> Lift the element at index <code>i</code> (Key).</li>
+                <li><strong>Scan:</strong> Look at elements to the left (index <code>j</code>).</li>
+                <li><strong>Shift:</strong> If <code>arr[j] > Key</code>, slide <code>arr[j]</code> to the right to make space.</li>
+                <li><strong>Insert:</strong> When a smaller element is found (or start of array), drop the <strong>Key</strong> into the empty slot.</li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void insertionSort(int arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j]; // Shift Right
+            j = j - 1;
+        }
+        arr[j + 1] = key; // Insert Key
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void insertionSort(vector<int>& arr) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public static void insertionSort(int[] arr) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def insertion_sort(arr): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/insertion_sort.js"></script>
+</body>
+</html>

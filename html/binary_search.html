@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Visualizer</title>
+    <link rel="stylesheet" href="../css/binary_search.css">
+</head>
+<body>
+
+    <h1>Binary Search</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Will be sorted automatically)</label>
+                <input type="text" id="arrayInput" value="2, 5, 8, 12, 16, 23, 38, 56, 72, 91" placeholder="e.g. 10, 5, Apple, 20">
+            </div>
+            <div class="input-group">
+                <label>Target to Find</label>
+                <input type="text" id="targetInput" value="23" placeholder="Value">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1x</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--warning);"></div> Midpoint (Comparing)</div>
+            <div class="legend-item" style="border: 1px solid var(--primary); padding: 2px 5px; border-radius: 4px;">Active Range [Low...High]</div>
+             <div class="legend-item"><div class="dot" style="background: var(--success);"></div> Found</div>
+            <div class="legend-item" style="opacity: 0.5;"><div class="dot" style="background: #45475a;"></div> Discarded</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Data will be sorted upon initialization.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>Binary Search Algorithm Logic</h3>
+            <p>Binary search is a "divide and conquer" algorithm that requires a <strong>sorted</strong> dataset.</p>
+            <ol>
+                <li>Set two pointers: <strong>Low</strong> at the start (index 0) and <strong>High</strong> at the end (index n-1).</li>
+                <li>While Low is less than or equal to High:
+                    <ul>
+                        <li>Calculate the <strong>Midpoint</strong> index: `(Low + High) / 2`.</li>
+                        <li>Compare the element at the Midpoint with the <strong>Target</strong>.</li>
+                        <li>If they match, <strong>Stop</strong>. Target found.</li>
+                        <li>If the Target is <em>smaller</em> than the Midpoint value, discard the right half. Move <strong>High</strong> to `Mid - 1`.</li>
+                        <li>If the Target is <em>larger</em> than the Midpoint value, discard the left half. Move <strong>Low</strong> to `Mid + 1`.</li>
+                    </ul>
+                </li>
+                <li>If Low becomes greater than High, the target is not in the list.</li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+#include <stdio.h>
+
+// Iterative Binary Search
+int binarySearch(int arr[], int l, int r, int x) {
+    while (l <= r) {
+        int mid = l + (r - l) / 2;
+
+        // Check if x is present at mid
+        if (arr[mid] == x)
+            return mid;
+
+        // If x greater, ignore left half
+        if (arr[mid] < x)
+            l = mid + 1;
+
+        // If x is smaller, ignore right half
+        else
+            r = mid - 1;
+    }
+
+    // if we reach here, then element was not present
+    return -1;
+}
+</pre>
+            </div>
+
+            <div id="cpp" class="code-content">
+<pre>
+#include <iostream>
+#include <vector>
+#include <algorithm> // Ensure data is sorted first
+using namespace std;
+
+int binarySearch(vector<int>& arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid] == target) {
+            return mid; // Found
+        } else if (arr[mid] < target) {
+            left = mid + 1; // Search right half
+        } else {
+            right = mid - 1; // Search left half
+        }
+    }
+    return -1; // Not found
+}
+</pre>
+            </div>
+
+            <div id="java" class="code-content">
+<pre>
+// Ensure array is sorted first: Arrays.sort(arr);
+
+public class BinarySearch {
+    public static int search(int[] arr, int target) {
+        int left = 0;
+        int right = arr.length - 1;
+
+        while (left <= right) {
+            // Prevent overflow for large inputs
+            int mid = left + (right - left) / 2;
+
+            if (arr[mid] == target) {
+                return mid; // Found
+            }
+
+            if (arr[mid] < target) {
+                left = mid + 1; // Search right half
+            } else {
+                right = mid - 1; // Search left half
+            }
+        }
+        return -1; // Not found
+    }
+}
+</pre>
+            </div>
+
+            <div id="python" class="code-content">
+<pre>
+# Note: List 'arr' must be sorted before calling this function.
+# arr.sort()
+
+def binary_search(arr, target):
+    low = 0
+    high = len(arr) - 1
+
+    while low <= high:
+        mid = (low + high) // 2 // Integer division
+
+        if arr[mid] == target:
+            return mid  # Found
+        elif arr[mid] < target:
+            low = mid + 1  # Search right half
+        else:
+            high = mid - 1  # Search left half
+
+    return -1  # Not found
+</pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/binary_search.js"></script>
+</body>
+</html>

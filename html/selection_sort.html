@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Selection Sort</title>
+    <link rel="stylesheet" href="../css/selection_sort.css">
+</head>
+<body>
+
+    <h1>Selection Sort</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group" style="flex-grow: 2;">
+                <label>Data Set (Comma separated)</label>
+                <input type="text" id="arrayInput" value="64, 25, 12, 22, 11" placeholder="e.g. 10, 50, 23">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="300" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSort()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSort()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background: var(--min);"></div> Current Min</div>
+            <div class="legend-item"><div class="dot" style="background: var(--scan);"></div> Scanning</div>
+            <div class="legend-item"><div class="dot" style="background: var(--sorted);"></div> Sorted</div>
+        </div>
+
+        <div class="visualizer-container" id="arrayContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Load data and click Start.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>Selection Sort Logic</h3>
+            <p>Splits the list into sorted (left) and unsorted (right) parts.</p>
+            <ol>
+                <li>Assume the first unsorted element is the <strong>Minimum</strong>.</li>
+                <li><strong>Scan</strong> the rest of the array. If you find a smaller number, update the Minimum.</li>
+                <li>At the end of the scan, <strong>Swap</strong> the found Minimum with the first unsorted element.</li>
+                <li>Repeat until the array is sorted.</li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void selectionSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+        }
+        // Swap the found minimum element with the first element
+        int temp = arr[min_idx];
+        arr[min_idx] = arr[i];
+        arr[i] = temp;
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void selectionSort(vector<int>& arr) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public static void selectionSort(int[] arr) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def selection_sort(arr): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/selection_sort.js"></script>
+</body>
+</html>
