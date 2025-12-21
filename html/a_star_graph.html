@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph A* Visualizer</title>
+    <link rel="stylesheet" href="../css/a_star_graph.css">
+</head>
+<body>
+
+    <h1>A* on Weighted Graph</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start Algorithm</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="resetGraphStatus()">Reset Path</button>
+                <button class="btn-rand" onclick="generateRandomGraph()">Random Graph</button>
+                <button class="btn-reset" onclick="clearGraph()">Clear All</button>
+            </div>
+            
+            <div class="mode-group">
+                <span style="color: var(--muted); font-size: 0.9rem;">Click Mode:</span>
+                <button class="btn-mode active" id="btnModeNode" onclick="setMode('node')">Add Node</button>
+                <button class="btn-mode" id="btnModeEdge" onclick="setMode('edge')">Add Edge</button>
+                <button class="btn-mode" id="btnModeEdit" onclick="setMode('edit')">Edit Weight</button>
+                
+                <button class="btn-mode" id="btnModeStart" onclick="setMode('start')">Set Start</button>
+                <button class="btn-mode" id="btnModeEnd" onclick="setMode('end')">Set End</button>
+            </div>
+
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="node-legend start">S</div> Start</div>
+            <div class="legend-item"><div class="node-legend end">E</div> End</div>
+            <div class="legend-item"><div class="node-legend open"></div> Open</div>
+            <div class="legend-item"><div class="node-legend closed"></div> Closed</div>
+            <div class="legend-item"><div class="edge-legend path"></div> Path Edge</div>
+        </div>
+
+        <div class="graph-container" id="graphContainer">
+            <svg id="svgEdges"></svg>
+            <div id="nodesLayer"></div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Click "Random Graph" or click to place nodes.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+struct Edge { int to; int weight; };
+
+int heuristic(Node* a, Node* b) {
+    return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
+}
+
+void aStar(int startNode, int endNode) {
+    priority_queue<pair<int, int>> openSet;
+    gScore[startNode] = 0;
+    fScore[startNode] = heuristic(startNode, endNode);
+    openSet.push({-fScore[startNode], startNode});
+
+    while(!openSet.empty()) {
+        int u = openSet.top().second; openSet.pop();
+        if (u == endNode) return reconstructPath();
+
+        for (Edge& e : adj[u]) {
+            int tentativeG = gScore[u] + e.weight;
+            if (tentativeG < gScore[e.to]) {
+                parent[e.to] = u;
+                gScore[e.to] = tentativeG;
+                fScore[e.to] = gScore[e.to] + heuristic(e.to, endNode);
+                openSet.push({-fScore[e.to], e.to});
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void aStar(int start, int end) { /* C++ Code */ }</pre></div>
+            <div id="java" class="code-content"><pre>public void aStar(Node start, Node end) { /* Java Code */ }</pre></div>
+            <div id="python" class="code-content"><pre>def a_star(start, end): # Python Code</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/a_star_graph.js"></script>
+</body>
+</html>

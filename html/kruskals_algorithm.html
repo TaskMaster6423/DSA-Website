@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kruskal's Algorithm Visualizer</title>
+    <link rel="stylesheet" href="../css/kruskals_algorithm.css">
+</head>
+<body>
+
+    <h1>Kruskal's Algorithm (MST)</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="button-group">
+                <button class="btn-primary" onclick="initKruskal()">Start Algorithm</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="pauseViz()">Pause</button>
+                <button class="btn-rand" onclick="generateRandomGraph()">Random Graph</button>
+                <button class="btn-reset" onclick="clearGraph()">Clear All</button>
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="node-legend set-color"></div> Nodes (Color = Set)</div>
+            <div class="legend-item"><div class="edge-legend current"></div> Checking</div>
+            <div class="legend-item"><div class="edge-legend mst"></div> Added to MST</div>
+            <div class="legend-item"><div class="edge-legend skipped"></div> Skipped (Cycle)</div>
+        </div>
+
+        <div class="graph-container" id="graphContainer">
+            <svg id="svgEdges"></svg>
+            <div id="nodesLayer"></div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Click "Random Graph" to begin.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+struct Edge { int u, v, weight; };
+
+// Union-Find Find Function
+int find(int i, int parent[]) {
+    if (parent[i] == i) return i;
+    return find(parent[i], parent);
+}
+
+// Union-Find Union Function
+void unionSets(int i, int j, int parent[]) {
+    int root_i = find(i, parent);
+    int root_j = find(j, parent);
+    if (root_i != root_j) parent[root_i] = root_j;
+}
+
+void kruskal(int V, vector<Edge>& edges) {
+    // 1. Sort edges by weight
+    sort(edges.begin(), edges.end(), compareEdges);
+
+    int parent[V]; // Create sets
+    for (int i = 0; i < V; i++) parent[i] = i;
+
+    // 2. Iterate sorted edges
+    for (Edge e : edges) {
+        int root_u = find(e.u, parent);
+        int root_v = find(e.v, parent);
+
+        // If different sets, add to MST
+        if (root_u != root_v) {
+            addToMST(e);
+            unionSets(root_u, root_v, parent);
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void kruskal(int V, vector<Edge>& edges) { /* Same as C */ }</pre></div>
+            <div id="java" class="code-content"><pre>
+class Edge implements Comparable<Edge> {
+    int src, dest, weight;
+    public int compareTo(Edge e) { return this.weight - e.weight; }
+}
+
+void kruskal(int V, List<Edge> edges) {
+    Collections.sort(edges);
+    int[] parent = new int[V];
+    for(int i=0; i<V; i++) parent[i] = i;
+
+    for (Edge e : edges) {
+        int root1 = find(parent, e.src);
+        int root2 = find(parent, e.dest);
+        if (root1 != root2) {
+            mst.add(e);
+            union(parent, root1, root2);
+        }
+    }
+}
+</pre></div>
+            <div id="python" class="code-content"><pre>
+def kruskal(vertices, edges):
+    edges.sort(key=lambda x: x[2]) # Sort by weight
+    parent = list(range(vertices)) # Make sets
+
+    def find(i):
+        if parent[i] == i: return i
+        return find(parent[i])
+
+    def union(i, j):
+        root_i = find(i)
+        root_j = find(j)
+        if root_i != root_j: parent[root_i] = root_j
+
+    mst = []
+    for u, v, w in edges:
+        if find(u) != find(v):
+            union(u, v)
+            mst.append((u, v, w))
+</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/kruskals_algorithm.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Visualizer</title>
+    <link rel="stylesheet" href="../css/n_queen.css">
+</head>
+<body>
+
+    <h1>N-Queens</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group">
+                <label>Board Size (N):</label>
+                <input type="number" id="sizeInput" min="4" max="14" value="4">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">Normal</span></label>
+                <input type="range" id="speedRange" min="1" max="500" value="200" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetBoard()">Reset</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="square legend-queen">♛</div> Placed</div>
+            <div class="legend-item"><div class="square legend-current">?</div> Checking</div>
+            <div class="legend-item"><div class="square legend-attack">X</div> Attack</div>
+        </div>
+
+        <div class="board-container" id="boardContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Select size and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+bool solveNQUtil(int board[][N], int col) {
+    if (col >= N) return true;
+
+    for (int i = 0; i < N; i++) {
+        if (isSafe(board, i, col)) {
+            board[i][col] = 1; // Place Queen
+            if (solveNQUtil(board, col + 1)) return true;
+            board[i][col] = 0; // Backtrack
+        }
+    }
+    return false;
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>bool solveNQUtil(vector<string>& board, int col) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>boolean solveNQUtil(int board[][], int col) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def solveNQUtil(board, col): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/n_queen.js"></script>
+</body>
+</html>

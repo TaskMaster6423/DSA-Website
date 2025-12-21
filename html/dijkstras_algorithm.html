@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijkstra's Algorithm Visualizer</title>
+    <link rel="stylesheet" href="../css/dijkstras_algorithm.css">
+</head>
+<body>
+
+    <h1>Dijkstra's Algorithm</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="button-group">
+                <button class="btn-primary" onclick="initDijkstra()">Start Algorithm</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="resetGraphStatus()">Reset Path</button>
+                <button class="btn-rand" onclick="generateRandomGraph()">Random Graph</button>
+                <button class="btn-reset" onclick="clearGraph()">Clear All</button>
+            </div>
+            
+            <div class="mode-group">
+                <span style="color: var(--muted); font-size: 0.9rem;">Click Mode:</span>
+                <button class="btn-mode active" id="btnModeNode" onclick="setMode('node')">Add Node</button>
+                <button class="btn-mode" id="btnModeEdge" onclick="setMode('edge')">Add Edge</button>
+                <button class="btn-mode" id="btnModeStart" onclick="setMode('start')">Set Start</button>
+                <button class="btn-mode" id="btnModeEnd" onclick="setMode('end')">Set End</button>
+            </div>
+
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="node-legend start">S</div> Start</div>
+            <div class="legend-item"><div class="node-legend end">E</div> End</div>
+            <div class="legend-item"><div class="node-legend visited"></div> Visited</div>
+            <div class="legend-item"><div class="node-legend scanning"></div> Scanning</div>
+            <div class="legend-item"><div class="edge-legend path"></div> Shortest Path</div>
+        </div>
+
+        <div class="graph-container" id="graphContainer">
+            <svg id="svgEdges"></svg>
+            <div id="nodesLayer"></div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Click "Random Graph" or create nodes to begin.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void dijkstra(int startNode) {
+    // Distance array, initialized to Infinity
+    for(int i=0; i<V; i++) dist[i] = INT_MAX;
+    
+    dist[startNode] = 0;
+    
+    // Min-Priority Queue: {distance, node}
+    priority_queue< pair<int,int> > pq;
+    pq.push({0, startNode});
+
+    while(!pq.empty()) {
+        int u = pq.top().second; 
+        pq.pop();
+
+        for(auto& edge : adj[u]) {
+            int v = edge.to;
+            int weight = edge.weight;
+
+            // Relaxation Step
+            if(dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+                pq.push({-dist[v], v});
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void dijkstra(int start) { /* C++ STL */ }</pre></div>
+            <div id="java" class="code-content"><pre>public void dijkstra(int start) { /* Java Code */ }</pre></div>
+            <div id="python" class="code-content"><pre>def dijkstra(start): # Python Code</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/dijkstras_algorithm.js"></script>
+</body>
+</html>

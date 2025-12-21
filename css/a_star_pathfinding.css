@@ -1,0 +1,141 @@
+:root {
+    --bg-color: #1e1e2e;
+    --card-bg: #2b2b40;
+    --primary: #89b4fa;
+    --start: #a6e3a1;      /* Green */
+    --end: #f38ba8;        /* Pink */
+    --wall: #181825;       /* Dark */
+    --open: #f9e2af;       /* Yellow */
+    --closed: #eba0ac;     /* Muted Red */
+    --path: #89b4fa;       /* Blue */
+    --text: #cdd6f4;
+    --muted: #a6adc8;
+    --border: #45475a;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 { margin-bottom: 20px; color: var(--primary); }
+
+.container { width: 95%; max-width: 1100px; display: flex; flex-direction: column; gap: 20px; }
+
+/* Controls */
+.controls-card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #181825;
+}
+.btn-primary { background-color: var(--primary); }
+.btn-step { background-color: var(--open); }
+.btn-stop { background-color: var(--end); }
+.btn-reset { background-color: var(--muted); }
+.btn-rand { background-color: #cba6f7; }
+
+.speed-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
+}
+label { font-size: 0.9rem; color: var(--muted); }
+
+/* Legend */
+.legend { display: flex; gap: 15px; font-size: 0.9rem; justify-content: center; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.cell-legend { width: 20px; height: 20px; border: 1px solid var(--border); }
+.cell-legend.start { background-color: var(--start); }
+.cell-legend.end { background-color: var(--end); }
+.cell-legend.wall { background-color: var(--wall); }
+.cell-legend.open { background-color: var(--open); }
+.cell-legend.closed { background-color: var(--closed); opacity: 0.6; }
+.cell-legend.path { background-color: var(--path); }
+
+/* Grid */
+.grid-container {
+    display: grid;
+    gap: 1px;
+    background-color: var(--border);
+    border: 4px solid var(--card-bg);
+    margin: 0 auto;
+    user-select: none; /* Crucial for drag drawing */
+    -webkit-user-drag: none;
+}
+
+.cell {
+    width: 25px;
+    height: 25px;
+    background-color: #313244;
+    cursor: pointer;
+    /* Removed transition for 'background-color' to make wall drawing feel instant */
+    transition: transform 0.2s; 
+}
+
+.cell:hover {
+    filter: brightness(1.2);
+}
+
+/* Cell States */
+.cell.start { background-color: var(--start); transform: scale(0.8); border-radius: 50%; }
+.cell.end { background-color: var(--end); transform: scale(0.8); border-radius: 50%; }
+.cell.wall { background-color: var(--wall); border: none; }
+
+/* Animations only for Algorithm steps */
+.cell.open { 
+    background-color: var(--open); 
+    animation: openAnim 0.4s ease-out;
+}
+.cell.closed { 
+    background-color: var(--closed); 
+    animation: closedAnim 0.4s ease-out;
+    opacity: 0.7;
+}
+.cell.path { 
+    background-color: var(--path); 
+    animation: pathAnim 0.4s ease-out forwards;
+}
+
+@keyframes openAnim { 0% { transform: scale(0.3); background-color: var(--start); } 100% { transform: scale(1); } }
+@keyframes closedAnim { 0% { transform: scale(0.3); } 100% { transform: scale(1); } }
+@keyframes pathAnim { 0% { transform: scale(0.6); } 100% { transform: scale(1.1); } }
+
+/* Logs & Code */
+.log-section {
+    background-color: #11111b;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    min-height: 40px;
+    color: var(--text);
+    border-left: 4px solid var(--primary);
+}
+
+.code-section { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; margin-top: 20px;}
+.tabs { display: flex; background-color: #181825; }
+.tab-btn { padding: 15px 25px; background: none; border: none; color: var(--muted); cursor: pointer; flex: 1; }
+.tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); background-color: rgba(137, 180, 250, 0.1); }
+.code-content { padding: 20px; display: none; }
+.code-content.active { display: block; }
+pre { margin: 0; white-space: pre-wrap; color: #cdd6f4; font-family: 'Courier New', monospace; background: #11111b; padding: 15px; }

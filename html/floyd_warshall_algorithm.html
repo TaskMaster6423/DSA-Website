@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floyd-Warshall Visualizer</title>
+    <link rel="stylesheet" href="../css/floyd_warshall_algorithm.css">
+</head>
+<body>
+
+    <h1>Floyd-Warshall Algorithm</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="button-group">
+                <button class="btn-primary" onclick="initFloyd()">Start Algorithm</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="pauseViz()">Pause</button>
+                <button class="btn-rand" onclick="generateRandomGraph()">Random Graph</button>
+                <button class="btn-reset" onclick="clearGraph()">Clear All</button>
+            </div>
+            
+            <div class="mode-group">
+                <span style="color: var(--muted); font-size: 0.9rem;">Click Mode:</span>
+                <button class="btn-mode active" id="btnModeNode" onclick="setMode('node')">Add Node</button>
+                <button class="btn-mode" id="btnModeEdge" onclick="setMode('edge')">Add Edge</button>
+                <button class="btn-mode" id="btnModeEdit" onclick="setMode('edit')">Edit Weight</button>
+            </div>
+
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="node-legend pivot">k</div> Pivot Node (Intermediate)</div>
+            <div class="legend-item"><div class="edge-legend checking"></div> Checking Path (i -> k -> j)</div>
+            <div class="legend-item"><div class="edge-legend update"></div> Shorter Path Found!</div>
+        </div>
+
+        <div class="viz-wrapper">
+            <div class="graph-container" id="graphContainer">
+                <svg id="svgEdges"></svg>
+                <div id="nodesLayer"></div>
+            </div>
+
+            <div class="matrix-container">
+                <h3>Distance Matrix</h3>
+                <table id="distMatrix">
+                    </table>
+            </div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Create a small graph (3-6 nodes recommended) and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void floydWarshall(int dist[][V], int V) {
+    // k is the intermediate node
+    for (int k = 0; k < V; k++) {
+        // i is source
+        for (int i = 0; i < V; i++) {
+            // j is destination
+            for (int j = 0; j < V; j++) {
+                // If vertex k is on the shortest path from i to j,
+                // then update the value of dist[i][j]
+                if (dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void floydWarshall(vector<vector<int>>& dist) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>void floydWarshall(int graph[][]) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def floyd_warshall(graph): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/floyd_warshall_algorithm.js"></script>
+</body>
+</html>

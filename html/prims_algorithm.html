@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prim's Algorithm Visualizer</title>
+    <link rel="stylesheet" href="../css/prims_algorithm.css">
+</head>
+<body>
+
+    <h1>Prim's Algorithm (MST)</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="button-group">
+                <button class="btn-primary" onclick="initPrim()">Start Algorithm</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="resetGraphStatus()">Reset</button>
+                <button class="btn-rand" onclick="generateRandomGraph()">Random Graph</button>
+                <button class="btn-reset" onclick="clearGraph()">Clear All</button>
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="node-legend visited"></div> Visited Node</div>
+            <div class="legend-item"><div class="edge-legend mst"></div> MST Edge</div>
+            <div class="legend-item"><div class="edge-legend candidate"></div> Candidate Edge</div>
+            <div class="legend-item"><div class="edge-legend scanning"></div> Scanning</div>
+        </div>
+
+        <div class="graph-container" id="graphContainer">
+            <svg id="svgEdges"></svg>
+            <div id="nodesLayer"></div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Click "Random Graph" to begin.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+void primMST(int graph[V][V]) {
+    int parent[V]; 
+    int key[V];    
+    bool mstSet[V]; 
+
+    // Initialize all keys as INFINITE
+    for (int i = 0; i < V; i++)
+        key[i] = INT_MAX, mstSet[i] = false;
+
+    // Start with first node
+    key[0] = 0;
+    parent[0] = -1;
+
+    for (int count = 0; count < V - 1; count++) {
+        // Pick min key vertex not yet in MST
+        int u = minKey(key, mstSet);
+        mstSet[u] = true;
+
+        // Update key value and parent index of adjacent
+        for (int v = 0; v < V; v++)
+            if (graph[u][v] && !mstSet[v] && graph[u][v] < key[v])
+                parent[v] = u, key[v] = graph[u][v];
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void primMST(int V, vector<vector<pair<int,int>>>& adj) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>void primMST(int graph[][]) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def primMST(graph): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/prims_algorithm.js"></script>
+</body>
+</html>

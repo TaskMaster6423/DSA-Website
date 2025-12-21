@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A* Pathfinding Visualizer</title>
+    <link rel="stylesheet" href="../css/a_star_pathfinding.css">
+</head>
+<body>
+
+    <h1>A* Pathfinding Visualizer</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetGrid()">Clear Path</button>
+                <button class="btn-reset" onclick="clearWalls()">Clear Walls</button>
+                <button class="btn-rand" onclick="generateMaze()">Random Walls</button>
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">Fast</span></label>
+                <input type="range" id="speedRange" min="0" max="100" value="10" style="direction: rtl;">
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="cell-legend start"></div> Start</div>
+            <div class="legend-item"><div class="cell-legend end"></div> End</div>
+            <div class="legend-item"><div class="cell-legend wall"></div> Wall (Draw)</div>
+            <div class="legend-item"><div class="cell-legend open"></div> Open</div>
+            <div class="legend-item"><div class="cell-legend closed"></div> Closed</div>
+            <div class="legend-item"><div class="cell-legend path"></div> Path</div>
+        </div>
+
+        <div class="grid-container" id="gridContainer">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Draw walls and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+// Heuristic: Manhattan Distance
+int h(Node a, Node b) {
+    return abs(a.x - b.x) + abs(a.y - b.y);
+}
+
+void aStar(Node start, Node end) {
+    openSet.push(start);
+    start.g = 0;
+    start.f = h(start, end);
+
+    while (!openSet.empty()) {
+        Node current = openSet.popLowestF();
+        if (current == end) return reconstructPath(current);
+
+        closedSet.add(current);
+
+        for (Node neighbor : current.neighbors) {
+            if (closedSet.contains(neighbor) || neighbor.isWall) continue;
+
+            int tempG = current.g + 1;
+            if (tempG < neighbor.g) {
+                neighbor.parent = current;
+                neighbor.g = tempG;
+                neighbor.f = neighbor.g + h(neighbor, end);
+                if (!openSet.contains(neighbor)) openSet.push(neighbor);
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void aStar(Node* start, Node* end) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public void aStar(Node start, Node end) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def a_star(start, end): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/a_star_pathfinding.js"></script>
+</body>
+</html>

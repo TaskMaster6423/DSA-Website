@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Alpha-Beta Pruning</title>
+    <link rel="stylesheet" href="../css/alpha_beta_puring.css">
+</head>
+<body>
+
+    <h1>Alpha-Beta Pruning</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group">
+                <label>Tree Depth (2-4)</label>
+                <input type="number" id="depthInput" value="3" min="2" max="4">
+            </div>
+            <div class="input-group">
+                <label>Branching Factor (2-3)</label>
+                <input type="number" id="branchInput" value="2" min="2" max="3">
+            </div>
+            
+            <div class="input-group toggle-group">
+                <label>Root Player</label>
+                <div class="toggle-wrapper">
+                    <span class="toggle-label">Min</span>
+                    <label class="switch">
+                        <input type="checkbox" id="rootToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Max</span>
+                </div>
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Start / Resume</button>
+                <button class="btn-step" onclick="stepForward()">Step By Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetVisualization()">New Tree</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="shape circle max-legend"></div> Maximizer</div>
+            <div class="legend-item"><div class="shape square min-legend"></div> Minimizer</div>
+            <div class="legend-item"><div class="dot" style="background: var(--active);"></div> Active</div>
+            <div class="legend-item"><div class="dot" style="background: var(--pruned);"></div> Pruned</div>
+        </div>
+
+        <div class="visualizer-container" id="treeContainer">
+            <div class="tree-wrapper" id="treeWrapper">
+                <svg id="svgLines"></svg> 
+            </div>
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Ready. Generate a tree and click Start.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+int minimax(int depth, int nodeIndex, bool isMax,
+            int scores[], int h, int alpha, int beta) {
+    // ... standard minimax logic ...
+    if (beta <= alpha) break; // Pruning
+    return best;
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>int minimax(...) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>static int minimax(...) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def minimax(...): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/alpha_beta_puring.js"></script>
+</body>
+</html>

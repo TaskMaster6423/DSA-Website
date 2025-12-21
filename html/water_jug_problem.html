@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Jug Visualizer</title>
+    <link rel="stylesheet" href="../css/water_jug_problem.css">
+</head>
+<body>
+
+    <h1>Water Jug Problem</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group">
+                <label>Jug A Capacity</label>
+                <input type="number" id="capA" value="4" min="1" max="20">
+            </div>
+            <div class="input-group">
+                <label>Jug B Capacity</label>
+                <input type="number" id="capB" value="3" min="1" max="20">
+            </div>
+            <div class="input-group">
+                <label>Target Amount</label>
+                <input type="number" id="target" value="2" min="1" max="20">
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">1.0s</span></label>
+                <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Solve & Animate</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="pauseViz()">Pause</button>
+                <button class="btn-reset" onclick="resetViz()">Reset</button>
+            </div>
+        </div>
+
+        <div class="viz-container">
+            
+            <div class="jug-wrapper">
+                <div class="jug" id="jugA">
+                    <div class="water" id="waterA" style="height: 0%"></div>
+                    <div class="jug-label">
+                        <span id="valA">0</span> / <span id="maxA">4</span>
+                    </div>
+                </div>
+                <h3>Jug A</h3>
+            </div>
+
+            <div class="action-indicator" id="actionArrow">➜</div>
+
+            <div class="jug-wrapper">
+                <div class="jug" id="jugB">
+                    <div class="water" id="waterB" style="height: 0%"></div>
+                    <div class="jug-label">
+                        <span id="valB">0</span> / <span id="maxB">3</span>
+                    </div>
+                </div>
+                <h3>Jug B</h3>
+            </div>
+
+        </div>
+
+        <div class="log-section" id="logBox">
+            Status: Set capacities and Target, then click Solve.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+// BFS Approach for Shortest Path
+struct State { int a, b; };
+
+void solve(int capA, int capB, int target) {
+    bool visited[capA+1][capB+1];
+    queue<vector<State>> q;
+    q.push({{0, 0}});
+
+    while(!q.empty()) {
+        vector<State> path = q.front(); q.pop();
+        State curr = path.back();
+
+        if (curr.a == target || curr.b == target) {
+            printPath(path);
+            return;
+        }
+
+        // Try 6 operations:
+        // 1. Fill A, 2. Fill B
+        // 3. Empty A, 4. Empty B
+        // 5. Pour A->B, 6. Pour B->A
+        // If next state !visited, push to queue
+    }
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>void solve(int capA, int capB, int target) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public void solve(int capA, int capB, int target) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def solve(cap_a, cap_b, target): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/water_jug_problem.js"></script>
+</body>
+</html>

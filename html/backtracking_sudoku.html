@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtracking - Sudoku Visualizer</title>
+    <link rel="stylesheet" href="../css/backtracking_sudoku.css">
+</head>
+<body>
+
+    <h1>Backtracking - Sudoku</h1>
+
+    <div class="container">
+        
+        <div class="controls-card">
+            <div class="input-group">
+                <label>Difficulty</label>
+                <select id="diffSelect">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            
+            <div class="speed-control">
+                <label>Speed: <span id="speedVal">Fast</span></label>
+                <input type="range" id="speedRange" min="1" max="200" value="20" style="direction: rtl;">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSearch()">Solve</button>
+                <button class="btn-step" onclick="stepForward()">Step</button>
+                <button class="btn-stop" onclick="pauseSearch()">Pause</button>
+                <button class="btn-reset" onclick="resetBoard()">Reset</button>
+                <button class="btn-rand" onclick="loadNewBoard()">Load New</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-box fixed">5</div> Fixed</div>
+            <div class="legend-item"><div class="legend-box try">3</div> Trying</div>
+            <div class="legend-item"><div class="legend-box safe">3</div> Valid</div>
+            <div class="legend-item"><div class="legend-box backtrack">X</div> Backtrack</div>
+        </div>
+
+        <div class="sudoku-grid" id="sudokuGrid">
+            </div>
+
+        <div class="log-section" id="logBox">
+            Status: Load a board and click Solve.
+        </div>
+
+        <div class="code-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('c')">C</button>
+                <button class="tab-btn" onclick="openTab('cpp')">C++</button>
+                <button class="tab-btn" onclick="openTab('java')">Java</button>
+                <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+
+            <div id="c" class="code-content active">
+<pre>
+bool solveSudoku(int grid[N][N]) {
+    int row, col;
+    if (!findUnassigned(grid, row, col))
+        return true; // Success!
+
+    for (int num = 1; num <= 9; num++) {
+        if (isSafe(grid, row, col, num)) {
+            grid[row][col] = num;
+            
+            if (solveSudoku(grid))
+                return true;
+
+            grid[row][col] = 0; // Backtrack
+        }
+    }
+    return false;
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content"><pre>bool solveSudoku(vector<vector<int>>& grid) { ... }</pre></div>
+            <div id="java" class="code-content"><pre>public boolean solveSudoku(int[][] board) { ... }</pre></div>
+            <div id="python" class="code-content"><pre>def solve_sudoku(board): ...</pre></div>
+        </div>
+    </div>
+
+    <script src="../js/backtracking_sudoku.js"></script>
+</body>
+</html>
