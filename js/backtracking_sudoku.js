@@ -1,5 +1,5 @@
-// --- Initial Boards (0 = Empty) ---
-const BOARDS = {
+// --- Base Boards (Templates) ---
+const BASE_BOARDS = {
     easy: [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -66,17 +66,98 @@ speedInput.addEventListener('input', (e) => {
     }
 });
 
+// --- Randomization Logic ---
 function loadNewBoard() {
     pauseSearch();
     const diff = diffSelect.value;
-    // Deep copy the preset
-    initialBoard = JSON.parse(JSON.stringify(BOARDS[diff]));
-    currentBoard = JSON.parse(JSON.stringify(initialBoard));
+    
+    // 1. Get Base Template
+    let board = JSON.parse(JSON.stringify(BASE_BOARDS[diff]));
+    
+    // 2. Apply Random Transformations (Preserves Validity)
+    board = shuffleNumbers(board);
+    board = shuffleRows(board);
+    board = shuffleCols(board);
+    if(Math.random() > 0.5) board = transpose(board);
+
+    initialBoard = JSON.parse(JSON.stringify(board));
+    currentBoard = JSON.parse(JSON.stringify(board));
     
     renderBoard();
     resetState();
+    logBox.innerText = `New ${diff} board loaded.`;
 }
 
+// 1. Shuffle Numbers (Map 1->9 to random 1->9)
+function shuffleNumbers(board) {
+    let map = [1,2,3,4,5,6,7,8,9];
+    // Fisher-Yates Shuffle
+    for (let i = map.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [map[i], map[j]] = [map[j], map[i]];
+    }
+    // Apply mapping (0 stays 0)
+    for(let r=0; r<9; r++) {
+        for(let c=0; c<9; c++) {
+            if(board[r][c] !== 0) {
+                board[r][c] = map[board[r][c] - 1];
+            }
+        }
+    }
+    return board;
+}
+
+// 2. Shuffle Rows (Only within 3-row bands)
+function shuffleRows(board) {
+    // Shuffle Band 0 (Rows 0-2)
+    shuffleBand(board, 0);
+    // Shuffle Band 1 (Rows 3-5)
+    shuffleBand(board, 3);
+    // Shuffle Band 2 (Rows 6-8)
+    shuffleBand(board, 6);
+    return board;
+}
+
+function shuffleBand(board, startRow) {
+    let rows = [0, 1, 2];
+    // Shuffle indices
+    for (let i = rows.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [rows[i], rows[j]] = [rows[j], rows[i]];
+    }
+    
+    // Create new block
+    let newBlock = [];
+    newBlock.push([...board[startRow + rows[0]]]);
+    newBlock.push([...board[startRow + rows[1]]]);
+    newBlock.push([...board[startRow + rows[2]]]);
+    
+    // Replace
+    board[startRow] = newBlock[0];
+    board[startRow+1] = newBlock[1];
+    board[startRow+2] = newBlock[2];
+}
+
+// 3. Shuffle Columns (Only within 3-col bands)
+// Easier to transpose -> shuffle rows -> transpose back
+function shuffleCols(board) {
+    board = transpose(board);
+    board = shuffleRows(board);
+    return transpose(board);
+}
+
+// 4. Transpose (Swap Rows and Cols)
+function transpose(board) {
+    let newBoard = Array.from({length: 9}, () => Array(9).fill(0));
+    for(let r=0; r<9; r++) {
+        for(let c=0; c<9; c++) {
+            newBoard[c][r] = board[r][c];
+        }
+    }
+    return newBoard;
+}
+
+// --- Rendering ---
 function renderBoard() {
     gridContainer.innerHTML = '';
     for(let r=0; r<9; r++) {
@@ -96,17 +177,20 @@ function renderBoard() {
 }
 
 function resetBoard() {
-    loadNewBoard(); // Reloads visual state
+    // Just resets state, keeps current random board
+    pauseSearch();
+    renderBoard(); 
+    resetState();
+    logBox.innerText = "Board Reset.";
 }
 
 function resetState() {
     isFinished = false;
     currentStep = 0;
     animations = [];
-    logBox.innerText = "Board Ready.";
 }
 
-// --- Backtracking Solver (Records Steps) ---
+// --- Backtracking Solver ---
 function solve() {
     let boardCopy = JSON.parse(JSON.stringify(initialBoard));
     solveUtil(boardCopy);
@@ -122,18 +206,14 @@ function solveUtil(grid) {
     let [row, col] = empty;
 
     for (let num = 1; num <= 9; num++) {
-        // Animation: Try Number
         animations.push({ type: 'TRY', r: row, c: col, val: num });
 
         if (isValid(grid, row, col, num)) {
             grid[row][col] = num;
-            
-            // Animation: Valid Placement
             animations.push({ type: 'VALID', r: row, c: col });
 
             if (solveUtil(grid)) return true;
 
-            // Backtrack
             grid[row][col] = 0;
             animations.push({ type: 'BACKTRACK', r: row, c: col });
         }
@@ -151,11 +231,8 @@ function findEmpty(grid) {
 }
 
 function isValid(grid, row, col, num) {
-    // Check Row
     for(let x=0; x<9; x++) if(grid[row][x] === num) return false;
-    // Check Col
     for(let x=0; x<9; x++) if(grid[x][col] === num) return false;
-    // Check 3x3
     let startRow = row - row % 3;
     let startCol = col - col % 3;
     for(let i=0; i<3; i++) {
@@ -176,9 +253,6 @@ function animateStep() {
     const action = animations[currentStep];
     const cell = document.getElementById(`cell-${action.r}-${action.c}`);
 
-    // Clean previous 'try' states if moving to new cell?
-    // We can just overwrite.
-
     if (action.type === 'TRY') {
         cell.innerText = action.val;
         cell.classList.remove('safe', 'backtrack');
@@ -192,7 +266,6 @@ function animateStep() {
         cell.innerText = '';
         cell.classList.remove('try', 'safe');
         cell.classList.add('backtrack');
-        // Remove backtrack color after brief flash? handled by next TRY usually
     }
     else if (action.type === 'FINISHED') {
         isFinished = true;
@@ -211,7 +284,6 @@ function initSearch() {
     if (isFinished) resetBoard();
     
     if (currentStep === 0) {
-        // Run logic once to fill queue
         animations = [];
         solve();
     }
@@ -219,6 +291,7 @@ function initSearch() {
     isRunning = true;
     timer = setInterval(animateStep, speed);
     logBox.innerText = "Solving...";
+    logBox.style.color = "var(--text)";
 }
 
 function pauseSearch() {
