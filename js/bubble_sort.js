@@ -11,12 +11,6 @@ let j = 0; // Inner loop
 let n = 0;
 let state = 'COMPARE'; // States: COMPARE, SWAP_ANIM, CLEANUP
 
-// Visual Constants
-// Need to match CSS width + gap
-const BAR_WIDTH = 50; 
-const GAP_WIDTH = 10;
-const TOTAL_WIDTH = BAR_WIDTH + GAP_WIDTH;
-
 // DOM
 const container = document.getElementById('arrayContainer');
 const logBox = document.getElementById('logBox');
@@ -143,11 +137,6 @@ function stepLogic() {
 
         if (shouldSwap) {
             state = 'SWAP_ANIM';
-            // We wait for next tick to animate so user sees the yellow compare state briefly?
-            // Or we can transition immediately. Let's wait one tick usually, 
-            // but for smooth flow, let's trigger animation setup in next interval cycle
-            // OR do it now if we want "Compare then Swap" in discrete steps.
-            // Let's do: Yellow shows up now. Next tick -> Red + Move.
         } else {
             // No swap needed, move to next index immediately next tick
             state = 'NEXT_INDEX'; 
@@ -162,11 +151,10 @@ function stepLogic() {
         bar1.classList.add('swap');
         bar2.classList.add('swap');
 
-        // ANIMATION: Slide them
-        // Bar1 (Left) moves Right (+)
-        // Bar2 (Right) moves Left (-)
-        bar1.style.transform = `translateX(${TOTAL_WIDTH}px)`;
-        bar2.style.transform = `translateX(-${TOTAL_WIDTH}px)`;
+        // ANIMATION: Slide them based on actual rendered position
+        const distance = bar2.offsetLeft - bar1.offsetLeft;
+        bar1.style.transform = `translateX(${distance}px)`;
+        bar2.style.transform = `translateX(-${distance}px)`;
 
         logBox.innerHTML += `<br>Swapping...`;
         
@@ -251,4 +239,25 @@ function openTab(lang) {
     if(lang==='cpp') tabs[1].classList.add('active');
     if(lang==='java') tabs[2].classList.add('active');
     if(lang==='python') tabs[3].classList.add('active');
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

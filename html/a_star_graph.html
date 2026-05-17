@@ -54,48 +54,189 @@
             Status: Click "Random Graph" or click to place nodes.
         </div>
 
+        <div class="algo-explanation">
+            <h3>A* Algorithm Logic</h3>
+            <p>A* Search Algorithm finds the shortest path from a starting node to a target node by combining the actual cost from the start (G-cost) and the estimated cost to the goal (Heuristic or H-cost).</p>
+            <ol>
+                <li>Initialize the <strong>Open Set</strong> (priority queue) with the start node, setting its G-cost to 0 and F-cost to the heuristic distance to the end node.</li>
+                <li>While the Open Set is not empty:
+                    <ul>
+                        <li><strong>Extract</strong> the node with the lowest F-cost (F = G + H).</li>
+                        <li>If this node is the target, the shortest path has been found.</li>
+                        <li>Otherwise, move the node to the <strong>Closed Set</strong>.</li>
+                        <li>For each neighbor, calculate its tentative G-cost. If it is lower than the previously recorded G-cost, update its G-cost, recalculate its F-cost, and add it to the Open Set.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
-struct Edge { int to; int weight; };
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;math.h&gt;
 
-int heuristic(Node* a, Node* b) {
-    return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
+typedef struct { int x, y; } Node;
+typedef struct { int to, weight; } Edge;
+
+int heuristic(Node a, Node b) {
+    return (int)sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
 
-void aStar(int startNode, int endNode) {
-    priority_queue<pair<int, int>> openSet;
-    gScore[startNode] = 0;
-    fScore[startNode] = heuristic(startNode, endNode);
-    openSet.push({-fScore[startNode], startNode});
+// Pseudo C Implementation
+void aStar(int start, int end, Node nodes[], int numNodes) {
+    int gScore[numNodes];
+    int fScore[numNodes];
+    for(int i=0; i&lt;numNodes; i++) {
+        gScore[i] = 999999;
+        fScore[i] = 999999;
+    }
+    
+    gScore[start] = 0;
+    fScore[start] = heuristic(nodes[start], nodes[end]);
+    
+    // A priority queue would be implemented here in pure C
+    // using a min-heap array or linked list.
+    
+    // ... priority queue logic ...
+}
+</pre>
+            </div>
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;cmath&gt;
+using namespace std;
 
+struct Node { int x, y; };
+struct Edge { int to, weight; };
+
+int heuristic(Node a, Node b) {
+    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+}
+
+void aStar(int start, int end, vector&lt;Node&gt;&amp; nodes, vector&lt;vector&lt;Edge&gt;&gt;&amp; adj) {
+    int n = nodes.size();
+    vector&lt;int&gt; gScore(n, 1e9);
+    vector&lt;int&gt; fScore(n, 1e9);
+    
+    // priority_queue stores {fScore, nodeIndex}
+    priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;pair&lt;int, int&gt;&gt;&gt; openSet;
+    
+    gScore[start] = 0;
+    fScore[start] = heuristic(nodes[start], nodes[end]);
+    openSet.push({fScore[start], start});
+    
     while(!openSet.empty()) {
-        int u = openSet.top().second; openSet.pop();
-        if (u == endNode) return reconstructPath();
-
-        for (Edge& e : adj[u]) {
-            int tentativeG = gScore[u] + e.weight;
-            if (tentativeG < gScore[e.to]) {
-                parent[e.to] = u;
-                gScore[e.to] = tentativeG;
-                fScore[e.to] = gScore[e.to] + heuristic(e.to, endNode);
-                openSet.push({-fScore[e.to], e.to});
+        int current = openSet.top().second;
+        openSet.pop();
+        
+        if (current == end) return; // Path found
+        
+        for (auto&amp; edge : adj[current]) {
+            int neighbor = edge.to;
+            int tentativeG = gScore[current] + edge.weight;
+            
+            if (tentativeG &lt; gScore[neighbor]) {
+                gScore[neighbor] = tentativeG;
+                fScore[neighbor] = tentativeG + heuristic(nodes[neighbor], nodes[end]);
+                openSet.push({fScore[neighbor], neighbor});
             }
         }
     }
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>void aStar(int start, int end) { /* C++ Code */ }</pre></div>
-            <div id="java" class="code-content"><pre>public void aStar(Node start, Node end) { /* Java Code */ }</pre></div>
-            <div id="python" class="code-content"><pre>def a_star(start, end): # Python Code</pre></div>
+            <div id="java" class="code-content">
+<pre>
+import java.util.*;
+
+class AStar {
+    static class Node { int x, y; }
+    static class Edge { int to, weight; Edge(int t, int w) { to=t; weight=w; } }
+    
+    static int heuristic(Node a, Node b) {
+        return (int)Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+    }
+    
+    public static void aStar(int start, int end, Node[] nodes, List&lt;List&lt;Edge&gt;&gt; adj) {
+        int n = nodes.length;
+        int[] gScore = new int[n];
+        int[] fScore = new int[n];
+        Arrays.fill(gScore, Integer.MAX_VALUE);
+        Arrays.fill(fScore, Integer.MAX_VALUE);
+        
+        PriorityQueue&lt;int[]&gt; openSet = new PriorityQueue&lt;&gt;((a, b) -&gt; a[0] - b[0]);
+        
+        gScore[start] = 0;
+        fScore[start] = heuristic(nodes[start], nodes[end]);
+        openSet.add(new int[]{fScore[start], start});
+        
+        while(!openSet.isEmpty()) {
+            int current = openSet.poll()[1];
+            
+            if(current == end) return; // Path found
+            
+            for(Edge edge : adj.get(current)) {
+                int neighbor = edge.to;
+                int tentativeG = gScore[current] + edge.weight;
+                
+                if(tentativeG &lt; gScore[neighbor]) {
+                    gScore[neighbor] = tentativeG;
+                    fScore[neighbor] = tentativeG + heuristic(nodes[neighbor], nodes[end]);
+                    openSet.add(new int[]{fScore[neighbor], neighbor});
+                }
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
+import math
+import heapq
+
+def heuristic(node_a, node_b):
+    return math.sqrt((node_a['x'] - node_b['x'])**2 + (node_a['y'] - node_b['y'])**2)
+
+def a_star(start, end, nodes, adj):
+    g_score = {i: float('inf') for i in range(len(nodes))}
+    f_score = {i: float('inf') for i in range(len(nodes))}
+    
+    g_score[start] = 0
+    f_score[start] = heuristic(nodes[start], nodes[end])
+    
+    open_set = [(f_score[start], start)]
+    
+    while open_set:
+        current_f, current = heapq.heappop(open_set)
+        
+        if current == end:
+            return  # Path found
+            
+        for neighbor, weight in adj[current]:
+            tentative_g = g_score[current] + weight
+            
+            if tentative_g &lt; g_score[neighbor]:
+                g_score[neighbor] = tentative_g
+                f_score[neighbor] = tentative_g + heuristic(nodes[neighbor], nodes[end])
+                heapq.heappush(open_set, (f_score[neighbor], neighbor))
+</pre>
+            </div>
         </div>
     </div>
 

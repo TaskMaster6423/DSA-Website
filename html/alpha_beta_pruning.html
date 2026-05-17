@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fixed Alpha-Beta Pruning</title>
-    <link rel="stylesheet" href="../css/alpha_beta_puring.css">
+    <link rel="stylesheet" href="../css/alpha_beta_pruning.css">
 </head>
 <body>
 
@@ -65,11 +65,14 @@
         </div>
 
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
             </div>
 
             <div id="c" class="code-content active">
@@ -88,6 +91,6 @@ int minimax(int depth, int nodeIndex, bool isMax,
         </div>
     </div>
 
-    <script src="../js/alpha_beta_puring.js"></script>
+    <script src="../js/alpha_beta_pruning.js"></script>
 </body>
 </html>

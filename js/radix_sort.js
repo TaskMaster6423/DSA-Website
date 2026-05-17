@@ -13,8 +13,8 @@ let currentStep = 0;
 let bucketQueues = Array.from({length: 10}, () => []);
 
 // Visual Constants
-const NODE_SIZE = 50;
-const GAP = 15;
+let NODE_SIZE = 50;
+let GAP = 15;
 let startX = 20;
 
 // DOM
@@ -85,17 +85,26 @@ function renderNodes(arr) {
     container.innerHTML = '';
     const n = arr.length;
 
-    // --- CENTERING ---
-    const totalWidth = n * NODE_SIZE + (n - 1) * GAP;
+    // --- DYNAMIC CENTERING & SIZING ---
     const containerWidth = container.clientWidth;
+    // Calculate node size so they fit. Base size 50, minimum 25.
+    let computedWidth = (containerWidth - 40 - (n - 1) * 5) / n;
+    NODE_SIZE = Math.min(computedWidth, 50); 
+    if (NODE_SIZE < 25) NODE_SIZE = 25; // keep readable
+    GAP = 5;
+
+    const totalWidth = n * NODE_SIZE + (n - 1) * GAP;
     startX = (containerWidth - totalWidth) / 2;
-    if(startX < 20) startX = 20;
+    if(startX < 10) startX = 10;
 
     arr.forEach((val, index) => {
         const node = document.createElement('div');
         node.className = 'array-node';
         node.id = `node-init-${index}`;
         
+        // Dynamic Size
+        node.style.width = `${NODE_SIZE}px`;
+        node.style.height = `${NODE_SIZE}px`;
         // Absolute Position
         const leftPos = startX + index * (NODE_SIZE + GAP);
         node.style.left = `${leftPos}px`;
@@ -263,4 +272,25 @@ function openTab(lang) {
     if(lang==='cpp') tabs[1].classList.add('active');
     if(lang==='java') tabs[2].classList.add('active');
     if(lang==='python') tabs[3].classList.add('active');
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

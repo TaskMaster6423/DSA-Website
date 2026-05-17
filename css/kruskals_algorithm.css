@@ -53,6 +53,9 @@ button:active { transform: scale(0.95); }
 .btn-reset { background-color: var(--muted); }
 .btn-rand { background-color: #cba6f7; }
 
+.btn-mode { background-color: #313244; color: var(--text); border: 1px solid var(--muted); }
+.btn-mode.active { background-color: var(--primary); color: #1e1e2e; border-color: var(--primary); }
+
 /* Graph Area */
 .graph-container {
     background-color: #181825;
@@ -61,6 +64,7 @@ button:active { transform: scale(0.95); }
     height: 500px;
     position: relative;
     overflow: hidden;
+    cursor: crosshair;
 }
 
 #svgEdges {
@@ -85,7 +89,10 @@ text.edge-weight {
     fill: var(--muted); font-size: 14px; 
     font-family: monospace; font-weight: bold;
     text-shadow: 0px 0px 4px #1e1e2e;
+    cursor: pointer;
+    pointer-events: all;
 }
+text.edge-weight:hover { fill: var(--primary); }
 
 /* Nodes */
 .node {
@@ -101,8 +108,11 @@ text.edge-weight {
     font-weight: bold;
     color: white;
     transform: translate(-50%, -50%);
-    transition: background-color 0.5s ease; /* Smooth color transition for Union */
+    transition: background-color 0.5s ease, border-color 0.3s, transform 0.2s;
+    cursor: pointer;
 }
+
+.node:hover { transform: translate(-50%, -50%) scale(1.1); }
 
 /* Legend */
 .legend { display: flex; gap: 15px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
@@ -130,3 +140,51 @@ text.edge-weight {
 .code-content { padding: 20px; display: none; }
 .code-content.active { display: block; }
 pre { margin: 0; white-space: pre-wrap; color: #cdd6f4; font-family: 'Courier New', monospace; background: #11111b; padding: 15px; }
+
+/* --- Responsive Buttons & Copy Code Styling --- */
+.button-group, .mode-group { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+}
+.button-group button, .mode-group button { flex: 1 1 auto; }
+
+.tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #181825;
+    padding-right: 15px;
+    border-bottom: 1px solid #313244;
+}
+
+.tabs {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    background-color: transparent !important;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.copy-btn {
+    background-color: var(--primary);
+    color: #11111b;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.3s;
+    margin-left: 10px;
+}
+
+.copy-btn:hover {
+    transform: scale(1.05);
+}

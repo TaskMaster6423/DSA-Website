@@ -150,3 +150,44 @@ button {
 .code-content { padding: 20px; display: none; }
 .code-content.active { display: block; }
 pre { margin: 0; white-space: pre-wrap; color: #cdd6f4; font-family: 'Courier New', monospace; background: #11111b; padding: 15px; }
+
+/* --- Responsive Buttons & Copy Code Styling --- */
+.button-group { justify-content: center; }
+.button-group button, .mode-group button { flex: 1 1 auto; }
+
+.tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #181825;
+    padding-right: 15px;
+    border-bottom: 1px solid #313244;
+}
+
+.tabs {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    background-color: transparent !important;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.copy-btn {
+    background-color: var(--primary);
+    color: #11111b;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.3s;
+    margin-left: 10px;
+}
+
+.copy-btn:hover {
+    transform: scale(1.05);
+}

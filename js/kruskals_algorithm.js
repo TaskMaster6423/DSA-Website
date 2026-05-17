@@ -1,6 +1,9 @@
 // --- State ---
 let nodes = []; // {id, x, y, el, color, setId}
 let edges = []; // {u, v, weight, elLine, elText}
+let mode = 'node'; // node, edge, edit
+let selectedNodeId = null;
+
 let animations = [];
 let currentStep = 0;
 let isRunning = false;
@@ -32,8 +35,38 @@ speedInput.addEventListener('input', (e) => {
     }
 });
 
+// Click Interaction on Container
+container.addEventListener('click', (e) => {
+    if(e.target === container || e.target === svgEdges) {
+        if(mode === 'node') {
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            createNode(x, y);
+        } else {
+            selectedNodeId = null;
+            updateNodeVisuals();
+        }
+    }
+});
+
+function setMode(m) {
+    mode = m;
+    selectedNodeId = null;
+    updateNodeVisuals();
+    document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btnMode${m.charAt(0).toUpperCase() + m.slice(1)}`).classList.add('active');
+    
+    let msg = "";
+    if(m === 'node') msg = "Click anywhere to create a Node.";
+    if(m === 'edge') msg = "Click two nodes to connect them.";
+    if(m === 'edit') msg = "Click on an edge's weight text to edit it.";
+    logBox.innerText = msg;
+}
+
 // --- Graph Generation ---
-function createNode(x, y, id) {
+function createNode(x, y) {
+    const id = nodes.length;
     const color = SET_COLORS[id % SET_COLORS.length];
     
     const el = document.createElement('div');
@@ -43,9 +76,36 @@ function createNode(x, y, id) {
     el.style.top = `${y}px`;
     el.style.backgroundColor = color; // Initial Set Color
     el.style.borderColor = color;
+    el.onclick = (e) => handleNodeClick(e, id);
 
     nodesLayer.appendChild(el);
     nodes.push({ id, x, y, el, color, setId: id });
+}
+
+function handleNodeClick(e, id) {
+    e.stopPropagation();
+    if(isRunning) return;
+
+    if (mode === 'edge') {
+        if (selectedNodeId === null) {
+            selectedNodeId = id;
+            nodes[id].el.style.borderColor = "var(--text)";
+            nodes[id].el.style.borderWidth = "4px";
+        } else {
+            if (selectedNodeId !== id) {
+                createEdge(selectedNodeId, id);
+            }
+            selectedNodeId = null;
+            updateNodeVisuals();
+        }
+    }
+}
+
+function updateNodeVisuals() {
+    nodes.forEach(n => {
+        n.el.style.borderColor = n.color;
+        n.el.style.borderWidth = "3px";
+    });
 }
 
 function createEdge(u, v) {
@@ -55,7 +115,7 @@ function createEdge(u, v) {
     const n2 = nodes[v];
     
     // Distance as weight
-    const weight = Math.floor(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)) / 5);
+    const weight = Math.floor(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)) / 10);
     
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', n1.x);
@@ -69,18 +129,42 @@ function createEdge(u, v) {
     text.setAttribute('y', (n1.y + n2.y)/2);
     text.setAttribute('class', 'edge-weight');
     text.textContent = weight;
+    
+    const edgeIndex = edges.length;
+    text.onclick = (e) => handleEdgeClick(e, edgeIndex);
+    line.onclick = (e) => handleEdgeClick(e, edgeIndex);
 
     svgEdges.appendChild(line);
     svgEdges.appendChild(text);
     
-    edges.push({ u, v, weight, elLine: line, id: edges.length });
+    edges.push({ u, v, weight, elLine: line, elText: text, id: edgeIndex });
+}
+
+function handleEdgeClick(e, idx) {
+    e.stopPropagation();
+    if(isRunning) return;
+    if(mode === 'edit') {
+        const edge = edges[idx];
+        let newVal = prompt(`Enter new weight for edge ${edge.u}-${edge.v}:`, edge.weight);
+        if(newVal !== null && newVal.trim() !== "") {
+            newVal = parseInt(newVal);
+            if(!isNaN(newVal) && newVal >= 0) {
+                edge.weight = newVal;
+                edge.elText.textContent = edge.weight;
+            } else {
+                alert("Please enter a valid non-negative number.");
+            }
+        }
+    }
 }
 
 function generateRandomGraph() {
     clearGraph();
     // Nodes
     for(let i=0; i<8; i++) {
-        createNode(50 + Math.random()*800, 50 + Math.random()*350, i);
+        const cw = container.clientWidth || 800;
+        const ch = container.clientHeight || 500;
+        createNode(40 + Math.random()*(cw - 80), 40 + Math.random()*(ch - 80));
     }
     // Edges (Connect if close)
     for(let i=0; i<nodes.length; i++) {
@@ -104,6 +188,7 @@ function clearGraph() {
     svgEdges.innerHTML = '';
     nodes = [];
     edges = [];
+    selectedNodeId = null;
     logBox.innerText = "Cleared.";
 }
 
@@ -139,16 +224,6 @@ function runKruskal() {
         let rootV = find(e.v);
 
         if (rootU !== rootV) {
-            // Union Logic for visualization tracking
-            // We need to know WHICH nodes change color. 
-            // In visualizer, we can iterate all nodes to find those belonging to rootU
-            // and change them to rootV's color.
-            
-            // Logic:
-            let oldSetId = rootU; // Simplified logic, assumes path compression isn't visualized instantly
-            // Actually, we need to track visual sets separately or reconstruct sets every step.
-            // Better: Record the UNION action with roots.
-            
             animations.push({ type: 'ADD_MST', edge: e });
             animations.push({ type: 'UNION', rootFrom: rootU, rootTo: rootV });
             
@@ -188,24 +263,12 @@ function animateStep() {
         logBox.innerHTML = `Nodes are in same set. Cycle detected. Skipping.`;
     }
     else if (action.type === 'UNION') {
-        // Merge Sets Visually
-        // We need to find all nodes that currently point to rootFrom and repoint them to rootTo
-        // And update their colors.
-        
-        let targetColor = nodes[action.rootTo].color; // Use the color of the new root
-        
-        // This is strictly visual update logic, simulating the result of Union
-        // Note: visualParent array tracks the current root of each node FOR THE ANIMATION
-        
-        // Find the visual root of 'from' group
-        let oldRoot = visualFind(action.rootFrom);
         let newRoot = visualFind(action.rootTo);
+        let oldRoot = visualFind(action.rootFrom);
         
-        // Update parents array
         visualParent[oldRoot] = newRoot;
         
         // Update DOM Colors
-        // Scan all nodes, if their root is now newRoot (via path traversal), update color
         for(let i=0; i<nodes.length; i++) {
             if(visualFind(i) === newRoot) {
                 nodes[i].el.style.backgroundColor = nodes[newRoot].color; 
@@ -233,7 +296,7 @@ function visualFind(i) {
 // --- Utils ---
 function initKruskal() {
     if (nodes.length === 0) {
-        logBox.innerText = "Please generate a graph first.";
+        logBox.innerText = "Please generate a graph or add nodes first.";
         return;
     }
     if (isRunning) return;
@@ -291,4 +354,25 @@ function openTab(lang) {
     if(lang==='cpp') tabs[1].classList.add('active');
     if(lang==='java') tabs[2].classList.add('active');
     if(lang==='python') tabs[3].classList.add('active');
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

@@ -45,31 +45,52 @@
             Status: Ready. Load data and click Start.
         </div>
 
+        <div class="algo-explanation">
+            <h3>Quick Sort Logic</h3>
+            <ol>
+                <li><strong>Choose Pivot:</strong> Select an element from the array to act as the pivot (often the last element).</li>
+                <li><strong>Partition:</strong> Rearrange the array so that all elements smaller than the pivot are on the left, and all elements greater are on the right.</li>
+                <li><strong>Recursion:</strong> Recursively apply the above steps to the sub-arrays to the left and right of the pivot.</li>
+                <li><strong>Conquer:</strong> Since each partition correctly places at least one element (the pivot), the entire array is sorted when all recursions finish.</li>
+            </ol>
+        </div>
+
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
+#include &lt;stdio.h&gt;
+
+void swap(int* a, int* b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
 int partition(int arr[], int low, int high) {
     int pivot = arr[high];
     int i = (low - 1);
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt; pivot) {
             i++;
-            swap(&arr[i], &arr[j]);
+            swap(&amp;arr[i], &amp;arr[j]);
         }
     }
-    swap(&arr[i + 1], &arr[high]);
+    swap(&amp;arr[i + 1], &amp;arr[high]);
     return (i + 1);
 }
 
 void quickSort(int arr[], int low, int high) {
-    if (low < high) {
+    if (low &lt; high) {
         int pi = partition(arr, low, high);
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
@@ -77,12 +98,16 @@ void quickSort(int arr[], int low, int high) {
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>
-int partition(vector<int>& arr, int low, int high) {
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;vector&gt;
+using namespace std;
+
+int partition(vector&lt;int&gt;&amp; arr, int low, int high) {
     int pivot = arr[high];
     int i = (low - 1);
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt; pivot) {
             i++;
             swap(arr[i], arr[j]);
         }
@@ -91,49 +116,64 @@ int partition(vector<int>& arr, int low, int high) {
     return (i + 1);
 }
 
-void quickSort(vector<int>& arr, int low, int high) {
-    if (low < high) {
+void quickSort(vector&lt;int&gt;&amp; arr, int low, int high) {
+    if (low &lt; high) {
         int pi = partition(arr, low, high);
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
     }
 }
-</pre></div>
-            <div id="java" class="code-content"><pre>
-int partition(int arr[], int low, int high) {
-    int pivot = arr[high];
-    int i = (low - 1);
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {
-            i++;
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+class QuickSort {
+    int partition(int arr[], int low, int high) {
+        int pivot = arr[high];
+        int i = (low - 1);
+        for (int j = low; j &lt; high; j++) {
+            if (arr[j] &lt; pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i+1];
+        arr[i+1] = arr[high];
+        arr[high] = temp;
+        return i+1;
+    }
+
+    void sort(int arr[], int low, int high) {
+        if (low &lt; high) {
+            int pi = partition(arr, low, high);
+            sort(arr, low, pi - 1);
+            sort(arr, pi + 1, high);
         }
     }
-    int temp = arr[i+1];
-    arr[i+1] = arr[high];
-    arr[high] = temp;
-    return i+1;
 }
-</pre></div>
-            <div id="python" class="code-content"><pre>
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
 def partition(arr, low, high):
     pivot = arr[high]
     i = low - 1
     for j in range(low, high):
-        if arr[j] < pivot:
+        if arr[j] &lt; pivot:
             i = i + 1
             arr[i], arr[j] = arr[j], arr[i]
     arr[i+1], arr[high] = arr[high], arr[i+1]
     return i + 1
 
 def quickSort(arr, low, high):
-    if low < high:
+    if low &lt; high:
         pi = partition(arr, low, high)
         quickSort(arr, low, pi - 1)
         quickSort(arr, pi + 1, high)
-</pre></div>
+</pre>
+            </div>
         </div>
     </div>
 

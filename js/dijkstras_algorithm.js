@@ -50,11 +50,17 @@ function setMode(m) {
     selectedNodeId = null;
     updateNodeVisuals();
     document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
-    document.getElementById(`btnMode${m.charAt(0).toUpperCase() + m.slice(1)}`).classList.add('active');
+    
+    let capM = m;
+    if (m === 'editEdge') capM = 'EditEdge';
+    else capM = m.charAt(0).toUpperCase() + m.slice(1);
+    
+    document.getElementById(`btnMode${capM}`).classList.add('active');
     
     let msg = "";
     if(m === 'node') msg = "Click anywhere to create a Node.";
     if(m === 'edge') msg = "Click two nodes to connect them.";
+    if(m === 'editEdge') msg = "Click on an edge's weight text to edit it.";
     if(m === 'start') msg = "Click a node to set as Start.";
     if(m === 'end') msg = "Click a node to set as End.";
     logBox.innerText = msg;
@@ -138,11 +144,36 @@ function createEdge(id1, id2) {
     text.setAttribute('y', (n1.y + n2.y)/2);
     text.setAttribute('class', 'edge-weight');
     text.textContent = weight;
+    text.style.cursor = 'pointer';
+    
+    text.onclick = (e) => handleEdgeClick(e, id1, id2);
+    line.onclick = (e) => handleEdgeClick(e, id1, id2);
+    line.style.cursor = 'pointer';
 
     svgEdges.appendChild(line);
     svgEdges.appendChild(text);
     
-    edges.push({ from: id1, to: id2, weight, elLine: line });
+    edges.push({ from: id1, to: id2, weight, elLine: line, elText: text });
+}
+
+function handleEdgeClick(e, id1, id2) {
+    e.stopPropagation();
+    if(isRunning) return;
+    if(mode === 'editEdge') {
+        const edge = edges.find(e => (e.from === id1 && e.to === id2) || (e.from === id2 && e.to === id1));
+        if (edge) {
+            let newWeight = prompt("Enter new weight for edge:", edge.weight);
+            if (newWeight !== null && newWeight.trim() !== "") {
+                newWeight = parseInt(newWeight);
+                if (!isNaN(newWeight) && newWeight >= 0) {
+                    edge.weight = newWeight;
+                    edge.elText.textContent = newWeight;
+                } else {
+                    alert("Please enter a valid non-negative number.");
+                }
+            }
+        }
+    }
 }
 
 // --- Dijkstra Logic ---
@@ -313,7 +344,9 @@ function clearGraph() {
 function generateRandomGraph() {
     clearGraph();
     for(let i=0; i<8; i++) {
-        createNode(50 + Math.random()*800, 50 + Math.random()*350);
+        const cw = container.clientWidth || 800;
+        const ch = container.clientHeight || 500;
+        createNode(40 + Math.random()*(cw - 80), 40 + Math.random()*(ch - 80));
     }
     for(let i=0; i<nodes.length; i++) {
         for(let j=i+1; j<nodes.length; j++) {
@@ -338,4 +371,25 @@ function openTab(lang) {
     if(lang==='cpp') tabs[1].classList.add('active');
     if(lang==='java') tabs[2].classList.add('active');
     if(lang==='python') tabs[3].classList.add('active');
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

@@ -16,11 +16,18 @@
             <div class="button-group">
                 <button class="btn-primary" onclick="initKruskal()">Start Algorithm</button>
                 <button class="btn-step" onclick="stepForward()">Step</button>
-                <button class="btn-stop" onclick="pauseViz()">Pause</button>
+                <button class="btn-stop" onclick="resetGraphStatus()">Reset</button>
                 <button class="btn-rand" onclick="generateRandomGraph()">Random Graph</button>
                 <button class="btn-reset" onclick="clearGraph()">Clear All</button>
             </div>
             
+            <div class="mode-group">
+                <span style="color: var(--muted); font-size: 0.9rem;">Click Mode:</span>
+                <button class="btn-mode active" id="btnModeNode" onclick="setMode('node')">Add Node</button>
+                <button class="btn-mode" id="btnModeEdge" onclick="setMode('edge')">Add Edge</button>
+                <button class="btn-mode" id="btnModeEdit" onclick="setMode('edit')">Edit Weight</button>
+            </div>
+
             <div class="speed-control">
                 <label>Speed: <span id="speedVal">1.0s</span></label>
                 <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
@@ -40,97 +47,178 @@
         </div>
 
         <div class="log-section" id="logBox">
-            Status: Click "Random Graph" to begin.
+            Status: Click "Random Graph" or click to place nodes.
+        </div>
+
+        <div class="algo-explanation">
+            <h3>Kruskal's Algorithm Logic</h3>
+            <p>Kruskal's Algorithm finds the Minimum Spanning Tree (MST) of a weighted undirected graph by sorting all edges and adding them one by one, provided they don't form a cycle.</p>
+            <ol>
+                <li><strong>Sort</strong> all edges in non-decreasing order of their weight.</li>
+                <li>Pick the smallest edge. Check if it forms a cycle with the spanning tree formed so far. This is typically done using a <strong>Disjoint Set (Union-Find)</strong> data structure.</li>
+                <li>If the cycle is not formed, include this edge. Otherwise, discard it.</li>
+                <li>Repeat step 2 until there are (V - 1) edges in the spanning tree, where V is the number of vertices.</li>
+            </ol>
         </div>
 
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
 struct Edge { int u, v, weight; };
 
-// Union-Find Find Function
-int find(int i, int parent[]) {
-    if (parent[i] == i) return i;
-    return find(parent[i], parent);
+int compareEdges(const void* a, const void* b) {
+    return ((struct Edge*)a)-&gt;weight - ((struct Edge*)b)-&gt;weight;
 }
 
-// Union-Find Union Function
+int find(int i, int parent[]) {
+    if (parent[i] == i) return i;
+    return parent[i] = find(parent[i], parent); // Path compression
+}
+
 void unionSets(int i, int j, int parent[]) {
     int root_i = find(i, parent);
     int root_j = find(j, parent);
     if (root_i != root_j) parent[root_i] = root_j;
 }
 
-void kruskal(int V, vector<Edge>& edges) {
-    // 1. Sort edges by weight
-    sort(edges.begin(), edges.end(), compareEdges);
+void kruskal(int V, int E, struct Edge edges[]) {
+    qsort(edges, E, sizeof(struct Edge), compareEdges);
 
-    int parent[V]; // Create sets
-    for (int i = 0; i < V; i++) parent[i] = i;
+    int parent[V];
+    for (int i = 0; i &lt; V; i++) parent[i] = i;
 
-    // 2. Iterate sorted edges
-    for (Edge e : edges) {
-        int root_u = find(e.u, parent);
-        int root_v = find(e.v, parent);
+    int mstWeight = 0;
+    for (int i = 0; i &lt; E; i++) {
+        int u = edges[i].u;
+        int v = edges[i].v;
+        int root_u = find(u, parent);
+        int root_v = find(v, parent);
 
-        // If different sets, add to MST
         if (root_u != root_v) {
-            addToMST(e);
             unionSets(root_u, root_v, parent);
+            mstWeight += edges[i].weight;
         }
     }
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>void kruskal(int V, vector<Edge>& edges) { /* Same as C */ }</pre></div>
-            <div id="java" class="code-content"><pre>
-class Edge implements Comparable<Edge> {
-    int src, dest, weight;
-    public int compareTo(Edge e) { return this.weight - e.weight; }
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+struct Edge { int u, v, weight; };
+
+bool compareEdges(Edge a, Edge b) { return a.weight &lt; b.weight; }
+
+int find(int i, vector&lt;int&gt;&amp; parent) {
+    if (parent[i] == i) return i;
+    return parent[i] = find(parent[i], parent);
 }
 
-void kruskal(int V, List<Edge> edges) {
-    Collections.sort(edges);
-    int[] parent = new int[V];
-    for(int i=0; i<V; i++) parent[i] = i;
+void unionSets(int i, int j, vector&lt;int&gt;&amp; parent) {
+    int root_i = find(i, parent);
+    int root_j = find(j, parent);
+    if (root_i != root_j) parent[root_i] = root_j;
+}
+
+void kruskal(int V, vector&lt;Edge&gt;&amp; edges) {
+    sort(edges.begin(), edges.end(), compareEdges);
+
+    vector&lt;int&gt; parent(V);
+    for (int i = 0; i &lt; V; i++) parent[i] = i;
 
     for (Edge e : edges) {
-        int root1 = find(parent, e.src);
-        int root2 = find(parent, e.dest);
-        if (root1 != root2) {
-            mst.add(e);
-            union(parent, root1, root2);
+        int root_u = find(e.u, parent);
+        int root_v = find(e.v, parent);
+
+        if (root_u != root_v) {
+            unionSets(root_u, root_v, parent);
+            // Edge e is part of MST
         }
     }
 }
-</pre></div>
-            <div id="python" class="code-content"><pre>
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+import java.util.*;
+
+class Kruskal {
+    static class Edge implements Comparable&lt;Edge&gt; {
+        int src, dest, weight;
+        public int compareTo(Edge e) { return this.weight - e.weight; }
+    }
+
+    static int find(int[] parent, int i) {
+        if (parent[i] == i) return i;
+        return parent[i] = find(parent, parent[i]);
+    }
+
+    static void union(int[] parent, int i, int j) {
+        int root1 = find(parent, i);
+        int root2 = find(parent, j);
+        if (root1 != root2) parent[root1] = root2;
+    }
+
+    public static void kruskal(int V, List&lt;Edge&gt; edges) {
+        Collections.sort(edges);
+        int[] parent = new int[V];
+        for (int i = 0; i &lt; V; i++) parent[i] = i;
+
+        for (Edge e : edges) {
+            int root1 = find(parent, e.src);
+            int root2 = find(parent, e.dest);
+            if (root1 != root2) {
+                union(parent, root1, root2);
+                // Edge e is part of MST
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
 def kruskal(vertices, edges):
     edges.sort(key=lambda x: x[2]) # Sort by weight
     parent = list(range(vertices)) # Make sets
 
     def find(i):
         if parent[i] == i: return i
-        return find(parent[i])
+        parent[i] = find(parent[i])
+        return parent[i]
 
     def union(i, j):
         root_i = find(i)
         root_j = find(j)
-        if root_i != root_j: parent[root_i] = root_j
+        if root_i != root_j: 
+            parent[root_i] = root_j
 
     mst = []
     for u, v, w in edges:
         if find(u) != find(v):
             union(u, v)
             mst.append((u, v, w))
-</pre></div>
+            
+    return mst
+</pre>
+            </div>
         </div>
     </div>
 

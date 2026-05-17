@@ -11,11 +11,6 @@ let j = 0;
 let keyVal = null;
 let state = 'SELECT'; // SELECT, COMPARE, SHIFT, PLACE, CLEANUP
 
-// Visual Constants
-const BAR_WIDTH = 50; 
-const BAR_GAP = 10;
-const TOTAL_ITEM_WIDTH = BAR_WIDTH + BAR_GAP;
-
 // DOM Elements
 const container = document.getElementById('arrayContainer');
 const logBox = document.getElementById('logBox');
@@ -156,9 +151,11 @@ function stepLogic() {
         const barJ = document.getElementById(`bar-${j}`);
         
         // ANIMATION: Slide bar J to the right
-        // We calculate movement based on 1 slot width
+        // We calculate movement dynamically based on element distance
+        const distance = dataArray.length > 1 ? document.getElementById(`bar-1`).offsetLeft - document.getElementById(`bar-0`).offsetLeft : 60;
+        
         barJ.classList.add('shifting');
-        barJ.style.transform = `translateX(${TOTAL_ITEM_WIDTH}px)`; 
+        barJ.style.transform = `translateX(${distance}px)`; 
         
         // Note: We are NOT changing IDs yet. Visually bar-j moves right.
         // Conceptually, bar-j is now occupying the space of j+1.
@@ -177,9 +174,9 @@ function stepLogic() {
         dataArray[j+1] = keyVal;
         
         // ANIMATION: Move Key from original index 'i' to new index 'j+1'
-        // Distance = (Target Index - Original Index) * Slot Width
         const distanceSlots = (j + 1) - i; 
-        const pixelMove = distanceSlots * TOTAL_ITEM_WIDTH;
+        const slotDist = dataArray.length > 1 ? document.getElementById(`bar-1`).offsetLeft - document.getElementById(`bar-0`).offsetLeft : 60;
+        const pixelMove = distanceSlots * slotDist;
         
         // We keep Y at -60 (lifted) then drop it? 
         // Let's just move it to final X and Y=0 in one go.
@@ -267,4 +264,25 @@ function stepForward() {
 function resetVisualization() {
     pauseSort();
     parseAndRender(true);
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

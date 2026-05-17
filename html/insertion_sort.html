@@ -55,20 +55,23 @@
         </div>
 
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
 void insertionSort(int arr[], int n) {
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i &lt; n; i++) {
         int key = arr[i];
         int j = i - 1;
-        while (j >= 0 && arr[j] > key) {
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
             arr[j + 1] = arr[j]; // Shift Right
             j = j - 1;
         }
@@ -77,9 +80,53 @@ void insertionSort(int arr[], int n) {
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>void insertionSort(vector<int>& arr) { ... }</pre></div>
-            <div id="java" class="code-content"><pre>public static void insertionSort(int[] arr) { ... }</pre></div>
-            <div id="python" class="code-content"><pre>def insertion_sort(arr): ...</pre></div>
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;vector&gt;
+using namespace std;
+
+void insertionSort(vector&lt;int&gt;&amp; arr) {
+    for (int i = 1; i &lt; arr.size(); i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+class InsertionSort {
+    public static void insertionSort(int[] arr) {
+        for (int i = 1; i &lt; arr.length; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j &gt;= 0 and arr[j] &gt; key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+</pre>
+            </div>
         </div>
     </div>
 

@@ -28,7 +28,7 @@
                 <button class="btn-mode" id="btnModeEdit" onclick="setMode('edit')">Edit Weight</button>
             </div>
 
-            <div class="speed-control">
+            <div class="speed-control" style="display: flex; flex-direction: column; align-items: center; min-width: 120px; gap: 5px;">
                 <label>Speed: <span id="speedVal">1.0s</span></label>
                 <input type="range" id="speedRange" min="200" max="2000" value="1000" style="direction: rtl;">
             </div>
@@ -57,26 +57,39 @@
             Status: Create a small graph (3-6 nodes recommended) and click Start.
         </div>
 
+        <div class="algo-explanation">
+            <h3>Floyd-Warshall Algorithm Logic</h3>
+            <p>The Floyd-Warshall algorithm computes shortest paths between all pairs of vertices using Dynamic Programming.</p>
+            <ol>
+                <li>Initialize the solution matrix same as the input graph matrix as a first step.</li>
+                <li>Pick an intermediate vertex `k` from `0` to `V-1`.</li>
+                <li>For every pair `(i, j)`, check if going through intermediate vertex `k` yields a shorter path: `dist[i][k] + dist[k][j] < dist[i][j]`.</li>
+                <li>If true, update `dist[i][j] = dist[i][k] + dist[k][j]`.</li>
+            </ol>
+        </div>
+
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
-void floydWarshall(int dist[][V], int V) {
-    // k is the intermediate node
-    for (int k = 0; k < V; k++) {
-        // i is source
-        for (int i = 0; i < V; i++) {
-            // j is destination
-            for (int j = 0; j < V; j++) {
-                // If vertex k is on the shortest path from i to j,
-                // then update the value of dist[i][j]
-                if (dist[i][k] + dist[k][j] < dist[i][j])
+#include &lt;stdio.h&gt;
+#define INF 99999
+#define V 4
+
+void floydWarshall(int dist[][V]) {
+    for (int k = 0; k &lt; V; k++) {
+        for (int i = 0; i &lt; V; i++) {
+            for (int j = 0; j &lt; V; j++) {
+                if (dist[i][k] + dist[k][j] &lt; dist[i][j])
                     dist[i][j] = dist[i][k] + dist[k][j];
             }
         }
@@ -84,9 +97,60 @@ void floydWarshall(int dist[][V], int V) {
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>void floydWarshall(vector<vector<int>>& dist) { ... }</pre></div>
-            <div id="java" class="code-content"><pre>void floydWarshall(int graph[][]) { ... }</pre></div>
-            <div id="python" class="code-content"><pre>def floyd_warshall(graph): ...</pre></div>
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+const int INF = 1e9;
+
+void floydWarshall(vector&lt;vector&lt;int&gt;&gt;&amp; dist) {
+    int V = dist.size();
+    for (int k = 0; k &lt; V; k++) {
+        for (int i = 0; i &lt; V; i++) {
+            for (int j = 0; j &lt; V; j++) {
+                if (dist[i][k] &lt; INF &amp;&amp; dist[k][j] &lt; INF) {
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+class FloydWarshall {
+    final static int INF = 99999;
+
+    void floydWarshall(int[][] dist, int V) {
+        for (int k = 0; k &lt; V; k++) {
+            for (int i = 0; i &lt; V; i++) {
+                for (int j = 0; j &lt; V; j++) {
+                    if (dist[i][k] + dist[k][j] &lt; dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
+def floyd_warshall(graph):
+    V = len(graph)
+    dist = list(map(lambda i: list(map(lambda j: j, i)), graph))
+    
+    for k in range(V):
+        for i in range(V):
+            for j in range(V):
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+                
+    return dist
+</pre>
+            </div>
         </div>
     </div>
 

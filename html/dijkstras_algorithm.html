@@ -25,6 +25,7 @@
                 <span style="color: var(--muted); font-size: 0.9rem;">Click Mode:</span>
                 <button class="btn-mode active" id="btnModeNode" onclick="setMode('node')">Add Node</button>
                 <button class="btn-mode" id="btnModeEdge" onclick="setMode('edge')">Add Edge</button>
+                <button class="btn-mode" id="btnModeEditEdge" onclick="setMode('editEdge')">Edit Edge</button>
                 <button class="btn-mode" id="btnModeStart" onclick="setMode('start')">Set Start</button>
                 <button class="btn-mode" id="btnModeEnd" onclick="setMode('end')">Set End</button>
             </div>
@@ -52,12 +53,32 @@
             Status: Click "Random Graph" or create nodes to begin.
         </div>
 
+        <div class="algo-explanation">
+            <h3>Dijkstra's Algorithm Logic</h3>
+            <p>Dijkstra's Algorithm finds the shortest path from a starting node to all other nodes in a weighted graph with non-negative weights.</p>
+            <ol>
+                <li>Initialize the distance to the <strong>Start</strong> node as 0 and to all other nodes as <strong>Infinity</strong>.</li>
+                <li>Create a <strong>Priority Queue</strong> (or min-heap) to continually extract the unvisited node with the smallest distance.</li>
+                <li>While the queue is not empty:
+                    <ul>
+                        <li><strong>Extract</strong> the node <code>u</code> with the minimum distance.</li>
+                        <li>For each neighboring node <code>v</code>, perform <strong>Relaxation</strong>:</li>
+                        <li>Calculate <code>tentative_dist = dist[u] + weight(u, v)</code>.</li>
+                        <li>If <code>tentative_dist < dist[v]</code>, update <code>dist[v]</code> and push <code>v</code> to the queue.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
+            </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
             </div>
 
             <div id="c" class="code-content active">
@@ -91,9 +112,102 @@ void dijkstra(int startNode) {
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>void dijkstra(int start) { /* C++ STL */ }</pre></div>
-            <div id="java" class="code-content"><pre>public void dijkstra(int start) { /* Java Code */ }</pre></div>
-            <div id="python" class="code-content"><pre>def dijkstra(start): # Python Code</pre></div>
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+using namespace std;
+
+const int INF = 1e9;
+
+void dijkstra(int start, int V, vector&lt;vector&lt;pair&lt;int, int&gt;&gt;&gt;&amp; adj) {
+    vector&lt;int&gt; dist(V, INF);
+    dist[start] = 0;
+    
+    // priority_queue&lt;distance, node&gt;
+    priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;pair&lt;int, int&gt;&gt;&gt; pq;
+    pq.push({0, start});
+
+    while (!pq.empty()) {
+        int d = pq.top().first;
+        int u = pq.top().second;
+        pq.pop();
+
+        if (d &gt; dist[u]) continue;
+
+        for (auto&amp; edge : adj[u]) {
+            int v = edge.first;
+            int weight = edge.second;
+
+            if (dist[u] + weight &lt; dist[v]) {
+                dist[v] = dist[u] + weight;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+import java.util.*;
+
+class Dijkstra {
+    static class Edge {
+        int target, weight;
+        Edge(int target, int weight) { this.target = target; this.weight = weight; }
+    }
+
+    public static void dijkstra(int start, int V, List&lt;List&lt;Edge&gt;&gt; adj) {
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[start] = 0;
+
+        PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;((a, b) -&gt; a[0] - b[0]);
+        pq.add(new int[]{0, start});
+
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int d = current[0];
+            int u = current[1];
+
+            if (d &gt; dist[u]) continue;
+
+            for (Edge edge : adj.get(u)) {
+                if (dist[u] + edge.weight &lt; dist[edge.target]) {
+                    dist[edge.target] = dist[u] + edge.weight;
+                    pq.add(new int[]{dist[edge.target], edge.target});
+                }
+            }
+        }
+    }
+}
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
+import heapq
+
+def dijkstra(start, V, adj):
+    dist = [float('inf')] * V
+    dist[start] = 0
+    
+    # Priority queue stores tuples of (distance, node)
+    pq = [(0, start)]
+    
+    while pq:
+        d, u = heapq.heappop(pq)
+        
+        if d &gt; dist[u]:
+            continue
+            
+        for v, weight in adj[u]:
+            if dist[u] + weight &lt; dist[v]:
+                dist[v] = dist[u] + weight
+                heapq.heappush(pq, (dist[v], v))
+</pre>
+            </div>
         </div>
     </div>
 

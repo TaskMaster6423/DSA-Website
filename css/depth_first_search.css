@@ -95,7 +95,7 @@ button:active { transform: scale(0.95); }
     position: relative;
     height: 450px; 
     border-radius: 12px;
-    overflow: hidden; 
+    overflow: auto; 
     border: 2px solid #313244;
 }
 
@@ -274,4 +274,45 @@ pre {
     .stack-container { height: 200px; }
     .stack-box { flex-direction: row; overflow-x: auto; } /* Horizontal stack on mobile */
     .stack-box-wrapper { flex-direction: row; align-items: center; }
+}
+
+/* --- Responsive Buttons & Copy Code Styling --- */
+.button-group { justify-content: center; }
+.button-group button, .mode-group button { flex: 1 1 auto; }
+
+.tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #181825;
+    padding-right: 15px;
+    border-bottom: 1px solid #313244;
+}
+
+.tabs {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    background-color: transparent !important;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.copy-btn {
+    background-color: var(--primary);
+    color: #11111b;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.3s;
+    margin-left: 10px;
+}
+
+.copy-btn:hover {
+    transform: scale(1.05);
 }

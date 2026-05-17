@@ -327,7 +327,9 @@ function generateRandomGraph() {
     clearGraph();
     // Generate scattered nodes
     for(let i=0; i<8; i++) {
-        createNode(50 + Math.random()*800, 50 + Math.random()*350);
+        const cw = container.clientWidth || 800;
+        const ch = container.clientHeight || 500;
+        createNode(40 + Math.random()*(cw - 80), 40 + Math.random()*(ch - 80));
     }
     // Connect them
     for(let i=0; i<nodes.length; i++) {
@@ -356,4 +358,25 @@ function openTab(lang) {
     if(lang==='cpp') tabs[1].classList.add('active');
     if(lang==='java') tabs[2].classList.add('active');
     if(lang==='python') tabs[3].classList.add('active');
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

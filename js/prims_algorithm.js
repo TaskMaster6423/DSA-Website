@@ -1,6 +1,9 @@
 // --- State ---
 let nodes = []; // {id, x, y, el}
 let edges = []; // {u, v, weight, elLine, elText}
+let mode = 'node'; // node, edge, edit
+let selectedNodeId = null;
+
 let animations = [];
 let currentStep = 0;
 let isRunning = false;
@@ -26,13 +29,44 @@ speedInput.addEventListener('input', (e) => {
     }
 });
 
+// Click Interaction on Container
+container.addEventListener('click', (e) => {
+    if(e.target === container || e.target === svgEdges) {
+        if(mode === 'node') {
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            createNode(x, y);
+        } else {
+            selectedNodeId = null;
+            updateNodeVisuals();
+        }
+    }
+});
+
+function setMode(m) {
+    mode = m;
+    selectedNodeId = null;
+    updateNodeVisuals();
+    document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btnMode${m.charAt(0).toUpperCase() + m.slice(1)}`).classList.add('active');
+    
+    let msg = "";
+    if(m === 'node') msg = "Click anywhere to create a Node.";
+    if(m === 'edge') msg = "Click two nodes to connect them.";
+    if(m === 'edit') msg = "Click on an edge's weight text to edit it.";
+    logBox.innerText = msg;
+}
+
 // --- Graph Generation ---
-function createNode(x, y, id) {
+function createNode(x, y) {
+    const id = nodes.length;
     const el = document.createElement('div');
     el.className = 'node';
     el.innerText = id;
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
+    el.onclick = (e) => handleNodeClick(e, id);
     
     const info = document.createElement('div');
     info.className = 'node-info';
@@ -43,6 +77,30 @@ function createNode(x, y, id) {
     nodes.push({ id, x, y, el });
 }
 
+function handleNodeClick(e, id) {
+    e.stopPropagation();
+    if(isRunning) return;
+
+    if (mode === 'edge') {
+        if (selectedNodeId === null) {
+            selectedNodeId = id;
+            nodes[id].el.style.borderColor = "var(--primary)";
+        } else {
+            if (selectedNodeId !== id) {
+                createEdge(selectedNodeId, id);
+            }
+            selectedNodeId = null;
+            updateNodeVisuals();
+        }
+    }
+}
+
+function updateNodeVisuals() {
+    nodes.forEach(n => {
+        n.el.style.borderColor = "";
+    });
+}
+
 function createEdge(u, v) {
     if(edges.some(e => (e.u===u && e.v===v) || (e.u===v && e.v===u))) return;
 
@@ -50,7 +108,7 @@ function createEdge(u, v) {
     const n2 = nodes[v];
     
     // Distance as weight
-    const weight = Math.floor(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)) / 5);
+    const weight = Math.floor(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)) / 10);
     
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', n1.x);
@@ -64,18 +122,42 @@ function createEdge(u, v) {
     text.setAttribute('y', (n1.y + n2.y)/2);
     text.setAttribute('class', 'edge-weight');
     text.textContent = weight;
+    
+    const edgeIndex = edges.length;
+    text.onclick = (e) => handleEdgeClick(e, edgeIndex);
+    line.onclick = (e) => handleEdgeClick(e, edgeIndex);
 
     svgEdges.appendChild(line);
     svgEdges.appendChild(text);
     
-    edges.push({ u, v, weight, elLine: line, id: edges.length });
+    edges.push({ u, v, weight, elLine: line, elText: text });
+}
+
+function handleEdgeClick(e, idx) {
+    e.stopPropagation();
+    if(isRunning) return;
+    if(mode === 'edit') {
+        const edge = edges[idx];
+        let newVal = prompt(`Enter new weight for edge ${edge.u}-${edge.v}:`, edge.weight);
+        if(newVal !== null && newVal.trim() !== "") {
+            newVal = parseInt(newVal);
+            if(!isNaN(newVal) && newVal >= 0) {
+                edge.weight = newVal;
+                edge.elText.textContent = edge.weight;
+            } else {
+                alert("Please enter a valid non-negative number.");
+            }
+        }
+    }
 }
 
 function generateRandomGraph() {
     clearGraph();
     // Nodes
     for(let i=0; i<8; i++) {
-        createNode(50 + Math.random()*800, 50 + Math.random()*350, i);
+        const cw = container.clientWidth || 800;
+        const ch = container.clientHeight || 500;
+        createNode(40 + Math.random()*(cw - 80), 40 + Math.random()*(ch - 80));
     }
     // Edges
     for(let i=0; i<nodes.length; i++) {
@@ -99,6 +181,7 @@ function clearGraph() {
     svgEdges.innerHTML = '';
     nodes = [];
     edges = [];
+    selectedNodeId = null;
     logBox.innerText = "Cleared.";
 }
 
@@ -181,15 +264,6 @@ function animateStep() {
         setTimeout(() => action.edge.elLine.classList.remove('scanning'), speed * 0.8);
     }
     else if (action.type === 'UPDATE_KEY') {
-        // Find previous candidate edges for node u and remove 'candidate' class?
-        // Actually, Prim's only keeps ONE best edge per node.
-        // We should visually clear old candidate for this specific node if we are being fancy, 
-        // but adding 'candidate' to the new one is enough for visualization flow.
-        
-        // Clean old candidate edges connected to this specific node 'v' 
-        // (Visual polish: find edges connected to u where u is the target, remove candidate)
-        // For simplicity, we just mark the new best one.
-        
         action.edge.elLine.classList.add('candidate');
         
         const info = document.getElementById(`info-${action.u}`);
@@ -211,7 +285,7 @@ function animateStep() {
 // --- Utils ---
 function initPrim() {
     if (nodes.length === 0) {
-        logBox.innerText = "Please generate a graph first.";
+        logBox.innerText = "Please generate a graph or add nodes first.";
         return;
     }
     if (isRunning) return;
@@ -260,4 +334,25 @@ function openTab(lang) {
     if(lang==='cpp') tabs[1].classList.add('active');
     if(lang==='java') tabs[2].classList.add('active');
     if(lang==='python') tabs[3].classList.add('active');
+}
+
+function copyCode() {
+    const activeTab = document.querySelector('.code-content.active');
+    if (activeTab) {
+        const pre = activeTab.querySelector('pre');
+        if (pre) {
+            navigator.clipboard.writeText(pre.innerText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = 'var(--primary)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
 }

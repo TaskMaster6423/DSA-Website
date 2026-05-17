@@ -50,28 +50,63 @@
             Status: Load a board and click Solve.
         </div>
 
+        <div class="algo-explanation">
+            <h3>Backtracking Algorithm Logic</h3>
+            <p>Backtracking is a methodical way of trying out various sequences of decisions, until you find one that "works". In the context of Sudoku:</p>
+            <ol>
+                <li>Find an empty cell in the grid. If no empty cell is found, the puzzle is solved.</li>
+                <li>Try placing digits 1 through 9 in that cell.</li>
+                <li>For each digit, check if it is valid (does not violate Sudoku rules in the current row, column, and 3x3 subgrid).</li>
+                <li>If a digit is valid, place it and recursively attempt to solve the rest of the board.</li>
+                <li>If the placement leads to a solution, return true. If it leads to a dead end (no valid digits for the next cell), <strong>backtrack</strong> by removing the digit (resetting the cell to empty) and try the next digit.</li>
+            </ol>
+        </div>
+
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
-bool solveSudoku(int grid[N][N]) {
-    int row, col;
-    if (!findUnassigned(grid, row, col))
-        return true; // Success!
+#include &lt;stdbool.h&gt;
 
-    for (int num = 1; num <= 9; num++) {
+#define N 9
+
+bool isSafe(int grid[N][N], int row, int col, int num) {
+    for (int x = 0; x &lt; N; x++) {
+        if (grid[row][x] == num || grid[x][col] == num || 
+            grid[row - row % 3 + x / 3][col - col % 3 + x % 3] == num) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool solveSudoku(int grid[N][N]) {
+    int row = -1, col = -1;
+    bool isEmpty = false;
+    for (int i = 0; i &lt; N; i++) {
+        for (int j = 0; j &lt; N; j++) {
+            if (grid[i][j] == 0) {
+                row = i; col = j; isEmpty = true; break;
+            }
+        }
+        if (isEmpty) break;
+    }
+
+    if (!isEmpty) return true;
+
+    for (int num = 1; num &lt;= 9; num++) {
         if (isSafe(grid, row, col, num)) {
             grid[row][col] = num;
-            
-            if (solveSudoku(grid))
-                return true;
-
+            if (solveSudoku(grid)) return true;
             grid[row][col] = 0; // Backtrack
         }
     }
@@ -79,9 +114,110 @@ bool solveSudoku(int grid[N][N]) {
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>bool solveSudoku(vector<vector<int>>& grid) { ... }</pre></div>
-            <div id="java" class="code-content"><pre>public boolean solveSudoku(int[][] board) { ... }</pre></div>
-            <div id="python" class="code-content"><pre>def solve_sudoku(board): ...</pre></div>
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;vector&gt;
+using namespace std;
+
+bool isSafe(vector&lt;vector&lt;int&gt;&gt;&amp; grid, int row, int col, int num) {
+    for (int x = 0; x &lt; 9; x++) {
+        if (grid[row][x] == num || grid[x][col] == num || 
+            grid[row - row % 3 + x / 3][col - col % 3 + x % 3] == num) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool solveSudoku(vector&lt;vector&lt;int&gt;&gt;&amp; grid) {
+    int row = -1, col = -1;
+    bool isEmpty = false;
+    for (int i = 0; i &lt; 9; i++) {
+        for (int j = 0; j &lt; 9; j++) {
+            if (grid[i][j] == 0) {
+                row = i; col = j; isEmpty = true; break;
+            }
+        }
+        if (isEmpty) break;
+    }
+
+    if (!isEmpty) return true;
+
+    for (int num = 1; num &lt;= 9; num++) {
+        if (isSafe(grid, row, col, num)) {
+            grid[row][col] = num;
+            if (solveSudoku(grid)) return true;
+            grid[row][col] = 0; // Backtrack
+        }
+    }
+    return false;
+}
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+class Sudoku {
+    public boolean isSafe(int[][] board, int row, int col, int num) {
+        for (int i = 0; i &lt; 9; i++) {
+            if (board[i][col] != 0 && board[i][col] == num) return false;
+            if (board[row][i] != 0 && board[row][i] == num) return false;
+            if (board[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] != 0 && 
+                board[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == num) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean solveSudoku(int[][] board) {
+        for (int i = 0; i &lt; 9; i++) {
+            for (int j = 0; j &lt; 9; j++) {
+                if (board[i][j] == 0) {
+                    for (int num = 1; num &lt;= 9; num++) {
+                        if (isSafe(board, i, j, num)) {
+                            board[i][j] = num;
+                            if (solveSudoku(board)) return true;
+                            board[i][j] = 0; // Backtrack
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
+def is_safe(board, row, col, num):
+    for i in range(9):
+        if board[row][i] == num or board[i][col] == num:
+            return False
+            
+    start_row = row - row % 3
+    start_col = col - col % 3
+    for i in range(3):
+        for j in range(3):
+            if board[i + start_row][j + start_col] == num:
+                return False
+    return True
+
+def solve_sudoku(board):
+    for i in range(9):
+        for j in range(9):
+            if board[i][j] == 0:
+                for num in range(1, 10):
+                    if is_safe(board, i, j, num):
+                        board[i][j] = num
+                        if solve_sudoku(board):
+                            return True
+                        board[i][j] = 0 # Backtrack
+                return False
+    return True
+</pre>
+            </div>
         </div>
     </div>
 

@@ -37,6 +37,7 @@ h1 { margin-bottom: 20px; color: var(--primary); }
 }
 
 .input-group { display: flex; flex-direction: column; gap: 5px; }
+.speed-control { display: flex; flex-direction: column; align-items: center; min-width: 120px; gap: 5px; margin-bottom: 5px; }
 label { font-size: 0.9rem; color: var(--muted); }
 input[type="text"] {
     padding: 10px;
@@ -65,7 +66,7 @@ button {
 .visualizer-container {
     background-color: var(--card-bg);
     /* Extra top padding for lifting animation */
-    padding: 100px 20px 20px 20px; 
+    padding: 100px 10px 20px 10px; 
     border-radius: 12px;
     height: 300px;
     position: relative; /* Essential for absolute children */
@@ -73,7 +74,6 @@ button {
 }
 
 .array-bar {
-    width: 45px;
     background-color: var(--bar);
     border: 1px solid #45475a;
     border-radius: 4px 4px 0 0;
@@ -83,17 +83,25 @@ button {
     padding-bottom: 5px;
     font-weight: bold;
     color: var(--text);
+    font-size: 0.9rem;
+    box-sizing: border-box;
     
     /* ABSOLUTE POSITIONING FOR MOVEMENT */
     position: absolute;
     bottom: 0;
     
     /* SMOOTH TRANSITIONS */
-    transition: transform 0.5s ease-in-out, left 0.5s ease-in-out, background-color 0.2s;
+    transition: transform 0.5s ease-in-out, left 0.5s ease-in-out, width 0.3s, background-color 0.2s;
     z-index: 1;
 }
 
-.array-bar span { z-index: 2; text-shadow: 0 1px 2px black; }
+@media (max-width: 600px) {
+    .array-bar {
+        font-size: 0.7rem;
+    }
+}
+
+.array-bar span { z-index: 2; text-shadow: 0 1px 2px black; word-break: break-all; text-align: center; }
 
 /* States */
 .array-bar.merging {
@@ -121,7 +129,7 @@ button {
 }
 
 /* Tabs & Legend */
-.code-section { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; }
+.code-section { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; margin-top: 20px; }
 .tabs { display: flex; background-color: #181825; }
 .tab-btn { padding: 15px 25px; background: none; border: none; color: var(--muted); cursor: pointer; flex: 1; }
 .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); background-color: rgba(137, 180, 250, 0.1); }
@@ -129,6 +137,54 @@ button {
 .code-content.active { display: block; }
 pre { margin: 0; white-space: pre-wrap; color: #cdd6f4; font-family: 'Courier New', monospace; background: #11111b; padding: 15px; }
 
-.legend { display: flex; gap: 15px; font-size: 0.9rem; justify-content: center; }
+.legend { display: flex; gap: 15px; font-size: 0.9rem; justify-content: center; flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+/* --- Responsive Buttons & Copy Code Styling --- */
+.button-group, .mode-group { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+}
+.button-group button, .mode-group button { flex: 1 1 auto; }
+
+.tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #181825;
+    padding-right: 15px;
+    border-bottom: 1px solid #313244;
+}
+
+.tabs {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    background-color: transparent !important;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.copy-btn {
+    background-color: var(--primary);
+    color: #11111b;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.3s;
+    margin-left: 10px;
+}
+
+.copy-btn:hover {
+    transform: scale(1.05);
+}

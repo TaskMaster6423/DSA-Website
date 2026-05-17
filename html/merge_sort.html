@@ -44,33 +44,65 @@
             Status: Ready. Load data and click Start.
         </div>
 
+        <div class="algo-explanation">
+            <h3>Merge Sort Logic</h3>
+            <ol>
+                <li><strong>Divide:</strong> Recursively divide the array into two halves until each subarray contains a single element.</li>
+                <li><strong>Conquer:</strong> Merge the smaller sorted subarrays back together.</li>
+                <li><strong>Merge Step:</strong> Compare the elements of two halves, picking the smaller one sequentially to form a combined sorted array.</li>
+                <li>Repeat the merge until the entire array is reconstructed in sorted order.</li>
+            </ol>
+        </div>
+
         <div class="code-section">
-            <div class="tabs">
+            <div class="tabs-header">
+                <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('c')">C</button>
                 <button class="tab-btn" onclick="openTab('cpp')">C++</button>
                 <button class="tab-btn" onclick="openTab('java')">Java</button>
                 <button class="tab-btn" onclick="openTab('python')">Python</button>
             </div>
+                <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
 
             <div id="c" class="code-content active">
 <pre>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
 void merge(int arr[], int l, int m, int r) {
     int i, j, k;
     int n1 = m - l + 1;
     int n2 = r - m;
-    // Create temp arrays...
-    
+
+    int L[n1], R[n2];
+
+    for (i = 0; i &lt; n1; i++) L[i] = arr[l + i];
+    for (j = 0; j &lt; n2; j++) R[j] = arr[m + 1 + j];
+
     i = 0; j = 0; k = l;
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) arr[k++] = L[i++];
-        else arr[k++] = R[j++];
+    while (i &lt; n1 &amp;&amp; j &lt; n2) {
+        if (L[i] &lt;= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
     }
-    while (i < n1) arr[k++] = L[i++];
-    while (j < n2) arr[k++] = R[j++];
+    while (i &lt; n1) {
+        arr[k] = L[i];
+        i++; k++;
+    }
+    while (j &lt; n2) {
+        arr[k] = R[j];
+        j++; k++;
+    }
 }
 
 void mergeSort(int arr[], int l, int r) {
-    if (l < r) {
+    if (l &lt; r) {
         int m = l + (r - l) / 2;
         mergeSort(arr, l, m);
         mergeSort(arr, m + 1, r);
@@ -79,35 +111,112 @@ void mergeSort(int arr[], int l, int r) {
 }
 </pre>
             </div>
-            <div id="cpp" class="code-content"><pre>
-void mergeSort(vector<int>& arr, int l, int r) {
-    if (l >= r) return;
+            <div id="cpp" class="code-content">
+<pre>
+#include &lt;vector&gt;
+using namespace std;
+
+void merge(vector&lt;int&gt;&amp; arr, int l, int m, int r) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+    vector&lt;int&gt; L(n1), R(n2);
+    for (int i = 0; i &lt; n1; i++) L[i] = arr[l + i];
+    for (int j = 0; j &lt; n2; j++) R[j] = arr[m + 1 + j];
+
+    int i = 0, j = 0, k = l;
+    while (i &lt; n1 &amp;&amp; j &lt; n2) {
+        if (L[i] &lt;= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+    }
+    while (i &lt; n1) arr[k++] = L[i++];
+    while (j &lt; n2) arr[k++] = R[j++];
+}
+
+void mergeSort(vector&lt;int&gt;&amp; arr, int l, int r) {
+    if (l &gt;= r) return;
     int m = l + (r - l) / 2;
     mergeSort(arr, l, m);
     mergeSort(arr, m + 1, r);
     merge(arr, l, m, r);
 }
-</pre></div>
-            <div id="java" class="code-content"><pre>
-void sort(int arr[], int l, int r) {
-    if (l < r) {
-        int m = l + (r - l) / 2;
-        sort(arr, l, m);
-        sort(arr, m + 1, r);
-        merge(arr, l, m, r);
+</pre>
+            </div>
+            <div id="java" class="code-content">
+<pre>
+class MergeSort {
+    void merge(int arr[], int l, int m, int r) {
+        int n1 = m - l + 1;
+        int n2 = r - m;
+        int L[] = new int[n1];
+        int R[] = new int[n2];
+        for (int i = 0; i &lt; n1; ++i) L[i] = arr[l + i];
+        for (int j = 0; j &lt; n2; ++j) R[j] = arr[m + 1 + j];
+
+        int i = 0, j = 0;
+        int k = l;
+        while (i &lt; n1 &amp;&amp; j &lt; n2) {
+            if (L[i] &lt;= R[j]) {
+                arr[k] = L[i];
+                i++;
+            } else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+        while (i &lt; n1) {
+            arr[k] = L[i];
+            i++; k++;
+        }
+        while (j &lt; n2) {
+            arr[k] = R[j];
+            j++; k++;
+        }
+    }
+
+    void sort(int arr[], int l, int r) {
+        if (l &lt; r) {
+            int m = l + (r - l) / 2;
+            sort(arr, l, m);
+            sort(arr, m + 1, r);
+            merge(arr, l, m, r);
+        }
     }
 }
-</pre></div>
-            <div id="python" class="code-content"><pre>
+</pre>
+            </div>
+            <div id="python" class="code-content">
+<pre>
 def mergeSort(arr):
-    if len(arr) > 1:
-        mid = len(arr)//2
+    if len(arr) &gt; 1:
+        mid = len(arr) // 2
         L = arr[:mid]
         R = arr[mid:]
+
         mergeSort(L)
         mergeSort(R)
-        # ... merge logic ...
-</pre></div>
+
+        i = j = k = 0
+        while i &lt; len(L) and j &lt; len(R):
+            if L[i] &lt;= R[j]:
+                arr[k] = L[i]
+                i += 1
+            else:
+                arr[k] = R[j]
+                j += 1
+            k += 1
+
+        while i &lt; len(L):
+            arr[k] = L[i]
+            i += 1
+            k += 1
+
+        while j &lt; len(R):
+            arr[k] = R[j]
+            j += 1
+            k += 1
+</pre>
+            </div>
         </div>
     </div>
 
